@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:mediease_app/firebase_options.dart';
+import 'package:mediease_app/backend%20code/firebase_options.dart';
+import 'package:mediease_app/backend%20code/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -116,6 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            SizedBox(
+              height: 50,
+            ),
+            ElevatedButton(
+                onPressed: () => AuthService().signInWithGoogle,
+                child: const Text("A"))
           ],
         ),
       ),
