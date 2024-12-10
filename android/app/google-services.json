@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "718442296538",
+    "project_id": "medieaseapp",
+    "storage_bucket": "medieaseapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718442296538:android:091501ea78aee866a6e1e3",
+        "android_client_info": {
+          "package_name": "com.example.mediease_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi0awkHwMON1GYwjjYdbiAtkH7TT8FM-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
