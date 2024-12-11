@@ -122,15 +122,26 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
                 onPressed: () => AuthService().signInWithGoogle(),
-                child: const Text("A"))
+                child: const Text("Google")),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  final userCredential =
+                      await AuthService().signInWithFacebook();
+                  if (userCredential != null) {
+                  
+                    print("Successfully signed in with Facebook!");
+                  }
+                } catch (e) {
+                  
+                  print("Error signing in with Facebook: $e");
+                }
+              },
+              child: const Text("FB"),
+            )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
