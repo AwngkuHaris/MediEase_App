@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:mediease_app/frontend%20code/pages/test_page2.dart';
 
@@ -17,15 +18,30 @@ class _TestPageState extends State<TestPage> {
   // Create an instance of AuthService
   final AuthService _authService = AuthService();
 
-  // Method to handle email/password login
-  Future<void> _emailSignIn() async {
+  // Track whether user wants to sign in or sign up
+  bool _isSignIn = true;
+
+  // Method to handle email/password authentication
+  Future<void> _handleAuth() async {
     try {
-      final userCredential = await _authService.signIn(
+      UserCredential? userCredential;
+
+      if (_isSignIn) {
+        // Sign In
+        userCredential = await _authService.signIn(
           email: _emailController.text.trim(),
-          password: _passwordController.text.trim());
+          password: _passwordController.text.trim(),
+        );
+      } else {
+        // Sign Up
+        userCredential = await _authService.signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      }
 
       if (userCredential != null) {
-        // Navigate to the next page if sign-in is successful
+        // Navigate to the next page if authentication is successful
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const TestPage2()),
@@ -34,7 +50,12 @@ class _TestPageState extends State<TestPage> {
     } catch (e) {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign in failed: $e')),
+        SnackBar(
+          content: Text(_isSignIn 
+            ? 'Sign in failed: $e' 
+            : 'Sign up failed: $e'
+          ),
+        ),
       );
     }
   }
@@ -43,7 +64,7 @@ class _TestPageState extends State<TestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: Text(_isSignIn ? "Sign In" : "Sign Up"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -76,14 +97,28 @@ class _TestPageState extends State<TestPage> {
             ),
             const SizedBox(height: 16),
 
-            // Email Sign In Button
-            ElevatedButton(
-              onPressed: _emailSignIn,
-              child: const Text("Sign In with Email"),
+            // Toggle between Sign In and Sign Up
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _isSignIn = !_isSignIn;
+                });
+              },
+              child: Text(_isSignIn 
+                ? "Don't have an account? Sign Up" 
+                : "Already have an account? Sign In"
+              ),
             ),
             const SizedBox(height: 16),
 
-            // Existing Google Sign-In Button
+            // Main Authentication Button
+            ElevatedButton(
+              onPressed: _handleAuth,
+              child: Text(_isSignIn ? "Sign In" : "Sign Up"),
+            ),
+            const SizedBox(height: 16),
+
+            // Existing Social Sign-In Buttons
             ElevatedButton(
               onPressed: () async {
                 try {
@@ -91,8 +126,7 @@ class _TestPageState extends State<TestPage> {
                   if (userCredential != null) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const TestPage2()),
+                      MaterialPageRoute(builder: (context) => const TestPage2()),
                     );
                   }
                 } catch (e) {
@@ -101,21 +135,17 @@ class _TestPageState extends State<TestPage> {
                   );
                 }
               },
-              child: const Text("Google"),
+              child: const Text("Sign in with Google"),
             ),
             const SizedBox(height: 16),
-
-            // Existing Facebook Sign-In Button
             ElevatedButton(
               onPressed: () async {
                 try {
-                  final userCredential =
-                      await _authService.signInWithFacebook();
+                  final userCredential = await _authService.signInWithFacebook();
                   if (userCredential != null) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const TestPage2()),
+                      MaterialPageRoute(builder: (context) => const TestPage2()),
                     );
                   }
                 } catch (e) {
@@ -124,7 +154,7 @@ class _TestPageState extends State<TestPage> {
                   );
                 }
               },
-              child: const Text("Facebook"),
+              child: const Text("Sign in with Facebook"),
             ),
           ],
         ),
