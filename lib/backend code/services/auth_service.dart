@@ -6,6 +6,10 @@ class AuthService {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  User? getCurrentUser(){
+    return _firebaseAuth.currentUser;
+  }
+
   signInWithGoogle() async {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
