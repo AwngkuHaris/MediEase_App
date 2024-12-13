@@ -82,7 +82,13 @@ class AuthService {
       );
     } on FirebaseAuthException catch (e) {
       // Handle specific sign-in errors
-      print('Sign in error: ${e.message}');
+      if (e.code == 'user-not-found') {
+      print('Error: No user found for that email.');
+    } else if (e.code == 'wrong-password') {
+      print('Error: Wrong password provided.');
+    } else {
+      print('Sign-in error dumb: ${e.message}');
+    }
       rethrow;
     }
   }
