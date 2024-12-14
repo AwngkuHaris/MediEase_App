@@ -9,6 +9,7 @@ class AuthService {
     return _firebaseAuth.currentUser;
   }
 
+  //sign in method with google
   signInWithGoogle() async {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
@@ -22,6 +23,7 @@ class AuthService {
     return await _firebaseAuth.signInWithCredential(credential);
   }
 
+  //sign in method with Facebook
   Future<UserCredential?> signInWithFacebook() async {
     try {
       // Trigger the sign-in flow
@@ -58,6 +60,7 @@ class AuthService {
     }
   }
 
+  //sign up method with email and password
   Future<UserCredential?> signUp({
     required String email,
     required String password,
@@ -71,6 +74,8 @@ class AuthService {
       rethrow;
     }
   }
+
+  //sign in method with email and password
   Future<UserCredential?> signIn({
     required String email,
     required String password,
@@ -82,14 +87,9 @@ class AuthService {
       );
     } on FirebaseAuthException catch (e) {
       // Handle specific sign-in errors
-      if (e.code == 'user-not-found') {
-      print('Error: No user found for that email.');
-    } else if (e.code == 'wrong-password') {
-      print('Error: Wrong password provided.');
-    } else {
-      print('Sign-in error dumb: ${e.message}');
-    }
+      print('Sign in error: ${e.message}');
       rethrow;
     }
   }
 }
+
