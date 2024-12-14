@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mediease_app/frontend%20code/pages/HealthEd_page.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment_page.dart';
@@ -70,4 +72,5 @@ class _MainPageState extends State<MainPage> {
       body: _pages[_selectedIndex], // Show the selected page
     );
   }
+  
 }
