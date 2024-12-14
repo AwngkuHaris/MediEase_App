@@ -22,7 +22,7 @@ class AuthStateListener extends StatelessWidget {
           return MainPage(); // Navigate to the home page
         } else {
           // User is signed out
-          return MainPage(); // Navigate to the sign-in page
+          return SigninPage(); // Navigate to the sign-in page
         }
       },
     );
