@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mediease_app/frontend%20code/pages/profileManagement_page.dart';
 
 class AccountsettingsPage extends StatelessWidget {
   AccountsettingsPage({super.key});
@@ -26,7 +27,7 @@ class AccountsettingsPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               width: MediaQuery.of(context).size.width,
-              height: 115,
+              
               margin: const EdgeInsets.all(15.0),
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -76,7 +77,7 @@ class AccountsettingsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AccountsettingsPage(),
+                        builder: (context) => ProfilemanagementPage(),
                       ),
                     );
                     // Navigate to AccountSettingsPage
@@ -103,6 +104,7 @@ class AccountsettingsPage extends StatelessWidget {
                     // Feedback navigation
                   },
                 ),
+                
               ],
             ),
           ],

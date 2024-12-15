@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mediease_app/frontend%20code/pages/main_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

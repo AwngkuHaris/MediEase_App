@@ -2,11 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/frontend%20code/pages/accountSettings_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin_page.dart';
+import 'package:mediease_app/backend%20code/services/firestore.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic>? userData;
+  final FirestoreService _userService = FirestoreService();
+
+  Future<void> _fetchUserData() async {
+    final data = await _userService.getUserData();
+    setState(() {
+      userData = data;
+    });
+  }
+  
+@override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +45,7 @@ class ProfilePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       width: MediaQuery.of(context).size.width,
-                      height: 115,
+                      
                       margin: const EdgeInsets.all(15.0),
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
@@ -45,7 +66,7 @@ class ProfilePage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  currentUser!.displayName ?? "Guest",
+                                  "${userData?['name'] ?? 'Not set'}",
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontSize: 17,
