@@ -42,10 +42,7 @@ class _SignInPageState extends State<SigninPage> {
 
       if (userCredential != null) {
         // Navigate to the next page if authentication is successful
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MainPage()),
-        );
+        
       }
     } catch (e) {
       // Show error message
@@ -211,10 +208,7 @@ class _SignInPageState extends State<SigninPage> {
                   final userCredential =
                       await _authService.signInWithFacebook();
                   if (userCredential != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainPage()),
-                    );
+                    
                   }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(

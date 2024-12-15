@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mediease_app/frontend%20code/pages/HealthEd_page.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment_page.dart';
@@ -8,7 +6,8 @@ import 'package:mediease_app/frontend%20code/pages/home_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final bool isSignedIn;
+  const MainPage({Key? key, required this.isSignedIn}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -63,8 +62,10 @@ class _MainPageState extends State<MainPage> {
               BottomNavigationBarItem(
                   icon: Icon(Icons.menu_book), label: "HealthEd"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_month_outlined), label: "Appointment"),
-              BottomNavigationBarItem(icon: Icon(Icons.chat_outlined), label: "Chat"),
+                  icon: Icon(Icons.calendar_month_outlined),
+                  label: "Appointment"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_outlined), label: "Chat"),
               BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline), label: "profile"),
             ]),
@@ -72,5 +73,4 @@ class _MainPageState extends State<MainPage> {
       body: _pages[_selectedIndex], // Show the selected page
     );
   }
-  
 }
