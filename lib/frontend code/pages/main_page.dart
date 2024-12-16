@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mediease_app/frontend%20code/pages/HealthEd_page.dart';
+import 'package:mediease_app/frontend%20code/pages/healthEd/HealthEd_page.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
 import 'package:mediease_app/frontend%20code/pages/chat/chat_page.dart';
 import 'package:mediease_app/frontend%20code/pages/home_page.dart';
