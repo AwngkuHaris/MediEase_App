@@ -216,35 +216,44 @@ class _SignUpPageState extends State<SignUpPage> {
                   MaterialButton(
                     onPressed: () async {
                       try {
+                        // Sign in with Google
                         final userCredential =
                             await _authService.signInWithGoogle();
+
                         if (userCredential.user != null) {
-                          await _firestore
+                          final userDocRef = _firestore
                               .collection('users')
-                              .doc(userCredential.user!.uid)
-                              .set({
-                            'name': userCredential.user!.displayName,
-                            'email': userCredential.user!.email,
-                            'profilePicture': userCredential.user!.photoURL,
-                            'createdAt': FieldValue.serverTimestamp()
-                          });
+                              .doc(userCredential.user!.uid);
+
+                          // Check if user document already exists
+                          final userDoc = await userDocRef.get();
+
+                          if (!userDoc.exists) {
+                            // If user document does not exist, create it
+                            await userDocRef.set({
+                              'name': userCredential.user!.displayName,
+                              'email': userCredential.user!.email,
+                              'profilePicture': userCredential.user!.photoURL,
+                              'createdAt': FieldValue.serverTimestamp(),
+                            });
+                          }
+
+                          // Optionally, handle what happens after a successful sign-in
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Sign-in successful!')),
+                          );
                         }
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Google Sign-In failed: $e')),
-                        );
+                        
                       }
                     },
-                    // Handle the sign-in logic here
-
-                    shape: CircleBorder(), // This makes the button circular
-                    padding: EdgeInsets.all(
-                        20), // Adjust padding for size of the circle
-                    elevation: 5, // Shadow of the button
-                    color: Colors.white, // Background color of the button
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(20),
+                    elevation: 5,
+                    color: Colors.white,
                     child: ClipOval(
-                        // This ensures the image is circular inside the button
-                        child: Text("Google")),
+                      child: Text("Google"),
+                    ),
                   ),
                   SizedBox(
                     width: 10,
@@ -317,25 +326,26 @@ class _SignUpPageState extends State<SignUpPage> {
                   height: 100, // Fixed height of the container at the bottom
                   width: MediaQuery.of(context).size.width,
                   color: Color(0xffD9D9D9),
-                  child: Center(child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Already have an account? ',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12), // Color for first part
+                  child: Center(
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Already have an account? ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12), // Color for first part
+                          ),
+                          TextSpan(
+                            text: 'Login',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 12), // Color for second part
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: 'Login',
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 12), // Color for second part
-                      ),
-                      
-                    ],
+                    ),
                   ),
-                ),),
                 ), // This will fill the remaining space
               ),
             ],

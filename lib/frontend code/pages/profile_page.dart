@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/frontend%20code/pages/accountSettings_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin_page.dart';
 import 'package:mediease_app/backend%20code/services/firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -22,8 +23,8 @@ class _ProfilePageState extends State<ProfilePage> {
       userData = data;
     });
   }
-  
-@override
+
+  @override
   void initState() {
     super.initState();
     _fetchUserData();
@@ -45,7 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       width: MediaQuery.of(context).size.width,
-                      
                       margin: const EdgeInsets.all(15.0),
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
@@ -163,8 +163,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: 10),
                     MaterialButton(
-                      onPressed: () {
-                        FirebaseAuth.instance.signOut(); // Trigger logout
+                      onPressed: () async {
+                        try {
+                          // Firebase Sign-Out
+                          await FirebaseAuth.instance.signOut();
+
+                          // Google Sign-Out
+                          final GoogleSignIn googleSignIn = GoogleSignIn();
+                          await googleSignIn
+                              .disconnect(); // Disconnect Google account
+                          await googleSignIn
+                              .signOut(); // Optional: Explicitly sign out
+
+                          // Show confirmation or redirect to login screen
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Logged out successfully')),
+                          );
+                        } catch (e) {
+                          // Handle any errors
+                        
+                        }
                       },
                       minWidth: 300,
                       height: 50,
@@ -175,11 +193,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text(
                         "LOGOUT",
                         style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
+
                     SizedBox(height: 25),
                   ],
                 ),
