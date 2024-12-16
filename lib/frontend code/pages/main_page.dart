@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mediease_app/frontend%20code/pages/HealthEd_page.dart';
-import 'package:mediease_app/frontend%20code/pages/appointment_page.dart';
-import 'package:mediease_app/frontend%20code/pages/chat_page.dart';
+import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
+import 'package:mediease_app/frontend%20code/pages/chat/chat_page.dart';
 import 'package:mediease_app/frontend%20code/pages/home_page.dart';
-import 'package:mediease_app/frontend%20code/pages/profile_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   final bool isSignedIn;

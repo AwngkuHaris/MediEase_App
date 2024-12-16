@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mediease_app/frontend%20code/pages/accountSettings_page.dart';
-import 'package:mediease_app/frontend%20code/pages/signin_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/accountSettings_page.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 import 'package:mediease_app/backend%20code/services/firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -19,9 +19,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchUserData() async {
     final data = await _userService.getUserData();
-    setState(() {
-      userData = data;
-    });
+    if (mounted) {
+      // Check if the widget is still in the widget tree
+      setState(() {
+        userData = data;
+      });
+    }
   }
 
   @override
@@ -181,7 +184,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           );
                         } catch (e) {
                           // Handle any errors
-                        
                         }
                       },
                       minWidth: 300,
