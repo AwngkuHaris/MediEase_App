@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class AppointmentPage extends StatefulWidget {
+class BookappointmentPage extends StatefulWidget {
   @override
-  _AppointmentPageState createState() => _AppointmentPageState();
+  _BookappointmentPageState createState() => _BookappointmentPageState();
 }
 
-class _AppointmentPageState extends State<AppointmentPage> {
+class _BookappointmentPageState extends State<BookappointmentPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String? selectedTimeSlot;
@@ -34,30 +34,39 @@ class _AppointmentPageState extends State<AppointmentPage> {
       return;
     }
 
-    // Combine date and time slot into a readable format
-    String formattedDate =
-        DateFormat('yyyy-MM-dd').format(_selectedDay!); // Format the date
-    String appointmentDateTime = '$formattedDate - $selectedTimeSlot';
-
-    // Get current user
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please log in to book an appointment')),
-      );
-      return;
-    }
-
+    // Combine date and time into a single DateTime object
     try {
-      // Store appointment in Firestore
+      // Convert selectedTimeSlot (e.g., '8 AM') into a 24-hour time
+      final timeFormat = DateFormat('h a'); // Parse '8 AM', '12 PM', etc.
+      DateTime time = timeFormat.parse(selectedTimeSlot!);
+
+      // Combine the selectedDay and time into a single DateTime object
+      DateTime combinedDateTime = DateTime(
+        _selectedDay!.year,
+        _selectedDay!.month,
+        _selectedDay!.day,
+        time.hour,
+        time.minute,
+      );
+
+      // Get the current user
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please log in to book an appointment')),
+        );
+        return;
+      }
+
+      // Save combinedDateTime to Firestore
       await FirebaseFirestore.instance.collection('appointments').add({
         'userId': currentUser.uid,
         'userName': currentUser.displayName ?? 'Unknown',
         'userEmail': currentUser.email ?? 'Unknown',
-        'appointmentDate': formattedDate,
-        'timeSlot': selectedTimeSlot,
+        'appointmentDateTime': combinedDateTime, // Save as DateTime
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'scheduled',
+        'title':'Fever',
       });
 
       // Success message
@@ -65,7 +74,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         SnackBar(content: Text('Appointment booked successfully!')),
       );
 
-      // Clear selection after saving
+      // Clear selections after saving
       setState(() {
         _selectedDay = null;
         selectedTimeSlot = null;
@@ -115,7 +124,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           shape: BoxShape.rectangle,
                         ),
                       ),
-                      firstDay: DateTime.now(),
+                      firstDay: DateTime.utc(2023),
                       lastDay: DateTime.utc(2030, 3, 14),
                       focusedDay: _focusedDay,
                     ),
