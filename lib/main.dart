@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mediease_app/backend%20code/consts.dart';
 import 'package:mediease_app/backend%20code/firebase_options.dart';
 import 'package:mediease_app/backend%20code/services/user_status.dart';
 
 void main() async {
+  Gemini.init(apiKey: GEMINI_API_KEY);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
