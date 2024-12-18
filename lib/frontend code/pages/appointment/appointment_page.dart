@@ -392,6 +392,5 @@ class _AppointmentPageState extends State<AppointmentPage> {
           ? Text(subtitle, style: TextStyle(fontSize: 12))
           : null,
     );
-    
   }
 }

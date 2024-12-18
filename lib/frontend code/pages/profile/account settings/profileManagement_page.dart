@@ -15,7 +15,7 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
     _fetchUserData();
   }

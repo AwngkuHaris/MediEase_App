@@ -1,8 +1,74 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mediease_app/backend%20code/services/firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+  final FirestoreService _userService = FirestoreService();
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final data = await _userService.getUserData();
+    if (mounted) {
+      // Check if the widget is still in the widget tree
+      setState(() {
+        userData = data;
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchClosestAppointment() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return null;
+
+    // Query appointments sorted by appointmentDateTime
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('userId', isEqualTo: currentUser.uid)
+        .where('appointmentDateTime',
+            isGreaterThan: DateTime.now()) // Future appointments
+        .orderBy('appointmentDateTime')
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      Map<String, dynamic> appointment =
+          snapshot.docs.first.data() as Map<String, dynamic>;
+
+      // Extract the appointmentDateTime (Timestamp)
+      Timestamp appointmentTimestamp = appointment['appointmentDateTime'];
+      DateTime appointmentDateTime = appointmentTimestamp.toDate();
+
+      // Format the date as "Weekday, day Month"
+      String formattedDate = DateFormat('EEEE, d MMMM')
+          .format(appointmentDateTime); // e.g., "Wednesday, 20 November"
+      String formattedTime =
+          DateFormat('hh:mm a').format(appointmentDateTime); // e.g., "02:30 PM"
+
+      // Add formatted date and time to the result map
+      appointment['formattedDate'] = formattedDate;
+      appointment['formattedTime'] = formattedTime;
+
+      return appointment;
+    }
+    return null; // No appointments found
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,60 +79,185 @@ class HomePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                "Welcome to MediEase!",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "Login to book the appointment",
-                style: TextStyle(fontSize: 13),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Upcoming Appointments",
-                    style: TextStyle(
-                        color: Color(0xff2A3E66),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 17),
-                  ),
-                ),
-              ),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xff9AD4CC),
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.2), // Shadow color (with opacity)
-                      spreadRadius: 3, // How much the shadow spreads
-                      blurRadius: 10, // How blurry the shadow is
-                      offset: Offset(0, 3), // Shadow position (x and y offset)
-                    ),
-                  ],
                 ),
                 width: MediaQuery.of(context).size.width,
-                height: 100,
-                margin: const EdgeInsets.all(
-                    15.0), // Adds space around the container
-                padding: const EdgeInsets.all(
-                    16.0), // Adds space inside the container
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                margin: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: currentUser!.photoURL != null
+                          ? NetworkImage(currentUser!.photoURL!)
+                          : null,
+                      child: currentUser!.photoURL == null
+                          ? Text(currentUser!.displayName?[0] ?? '')
+                          : null,
+                      radius: 40,
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Hello ${userData?['name'] ?? 'Not set'}",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "Welcome to MediEase",
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
                   children: [
                     Text(
-                      textAlign: TextAlign.center,
-                      "No Upcoming Appointments",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      "Upcoming Appointments",
+                      style: TextStyle(
+                          color: Color(0xff2A3E66),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17),
+                    ),
+                    Spacer(),
+                    Text(
+                      "See all",
+                      style: TextStyle(color: Color(0xff2A3E66), fontSize: 12),
                     ),
                   ],
                 ),
+              ),
+              FutureBuilder(
+                future: fetchClosestAppointment(),
+                builder:
+                    (context, AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  final appointment = snapshot.data;
+
+                  if (appointment == null) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'No upcoming appointments.',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // Display the closest appointment in a card
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            appointment['title'],
+                            style: const TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                              color: Color(0xff279DA4),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Date:",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      appointment['formattedDate'],
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "|",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Time:",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      appointment['formattedTime'],
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: 10,
@@ -115,14 +306,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 200,
+                height: 50,
               ),
-              Text("You are signed in!"),
-              ElevatedButton(
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                  },
-                  child: Text("Sign Out"))
             ],
           ),
         ),

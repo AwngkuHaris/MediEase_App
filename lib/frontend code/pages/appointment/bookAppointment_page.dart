@@ -66,7 +66,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
         'appointmentDateTime': combinedDateTime, // Save as DateTime
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'scheduled',
-        'title':'Fever',
+        'title': 'Fever',
       });
 
       // Success message
@@ -90,6 +90,11 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xff9AD4CC),
+        title: Text("Book Appointment"),
+        centerTitle: true,
+      ),
       backgroundColor: Color(0xff9AD4CC),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -97,9 +102,23 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: Text(
+                  "Choose Appointment Date",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff2A3E66),
+                  ),
+                ),
+              ),
               // Date Selection
               Container(
-                color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 margin: const EdgeInsets.all(15.0),
                 padding: const EdgeInsets.all(15.0),
                 child: Column(
@@ -135,6 +154,18 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: Text(
+                  "Choose Appointment Time",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff2A3E66),
+                  ),
                 ),
               ),
 
@@ -196,15 +227,23 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
 
               // Book Appointment Button
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _bookAppointment,
-                child: Text(
-                  "Book Appointment",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              MaterialButton(
+                onPressed: () {
+                  _bookAppointment();
+                },
+                minWidth: 300,
+                height: 50,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0XFF00589F),
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                color: Color(0xff00589F),
+                child: Text(
+                  "Confirm Appointment",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
