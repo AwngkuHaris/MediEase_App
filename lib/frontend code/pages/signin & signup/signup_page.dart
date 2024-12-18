@@ -216,14 +216,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   MaterialButton(
                     onPressed: () async {
                       try {
+                        final scaffoldMessenger = ScaffoldMessenger.of(
+                            context); // Store the reference early
+
                         // Sign in with Google
                         final userCredential =
                             await _authService.signInWithGoogle();
+                        final user = userCredential?.user;
 
-                        if (userCredential.user != null) {
-                          final userDocRef = _firestore
-                              .collection('users')
-                              .doc(userCredential.user!.uid);
+                        if (user != null) {
+                          final userDocRef =
+                              _firestore.collection('users').doc(user.uid);
 
                           // Check if user document already exists
                           final userDoc = await userDocRef.get();
@@ -231,20 +234,45 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (!userDoc.exists) {
                             // If user document does not exist, create it
                             await userDocRef.set({
-                              'name': userCredential.user!.displayName,
-                              'email': userCredential.user!.email,
-                              'profilePicture': userCredential.user!.photoURL,
+                              'name': user.displayName,
+                              'email': user.email,
+                              'profilePicture': user.photoURL,
+                              'dateOfBirth': "",
+                              'bloodType': "",
+                              'allergies': "",
+                              'chronicConditions': "None",
+                              'covidVaccine': "",
+                              'tetanusVaccine': "",
+                              'hpvVaccine': "",
+                              'primaryContact': "",
+                              'secondaryContact': "",
+                              'notes': "",
                               'createdAt': FieldValue.serverTimestamp(),
                             });
                           }
 
-                          // Optionally, handle what happens after a successful sign-in
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Sign-in successful!')),
-                          );
+                          // Safely show a snackbar
+                          if (mounted) {
+                            scaffoldMessenger.showSnackBar(
+                              SnackBar(content: Text('Sign-in successful!')),
+                            );
+                          }
+                        } else {
+                          if (mounted) {
+                            scaffoldMessenger.showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Sign-in failed. Please try again.')),
+                            );
+                          }
                         }
                       } catch (e) {
-                        
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('An error occurred: $e')),
+                          );
+                        }
+                        print('Error: $e');
                       }
                     },
                     shape: CircleBorder(),
@@ -274,7 +302,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ],
               ),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 80),
 
               Container(
                 width: 250,

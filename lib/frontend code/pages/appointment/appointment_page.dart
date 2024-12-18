@@ -86,6 +86,18 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return appointments;
   }
 
+  Future<void> deleteAppointment(String appointmentId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(appointmentId)
+          .delete();
+      print('Appointment deleted successfully');
+    } catch (e) {
+      print('Error deleting appointment: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,8 +259,18 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 color: Color(0xffD9534F),
-                                onPressed: () {
-                                  // Cancel appointment logic
+                                onPressed: () async {
+                                  final String appointmentId = appointment[
+                                      'appointmentId']; // Ensure this key is available
+                                  await deleteAppointment(appointmentId);
+
+                                  // Refresh the UI
+                                  setState(() {});
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Appointment canceled successfully!')),
+                                  );
                                 },
                                 child: const Text(
                                   "Cancel Appointment",

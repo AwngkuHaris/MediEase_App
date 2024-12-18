@@ -90,14 +90,15 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage: currentUser!.photoURL != null
-                          ? NetworkImage(currentUser!.photoURL!)
-                          : null,
-                      child: currentUser!.photoURL == null
-                          ? Text(currentUser!.displayName?[0] ?? '')
-                          : null,
-                      radius: 40,
-                    ),
+                            backgroundImage: currentUser!.photoURL != null
+                                ? NetworkImage(currentUser!.photoURL!)
+                                : null,
+                            child: currentUser!.photoURL == null
+                                ? Text(currentUser!.displayName?[0] ?? '')
+                                : null,
+                            radius: 40,
+                          ),
+                    
                     SizedBox(width: 20),
                     Expanded(
                       child: Column(

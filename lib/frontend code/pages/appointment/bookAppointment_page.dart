@@ -59,11 +59,18 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
       }
 
       // Save combinedDateTime to Firestore
-      await FirebaseFirestore.instance.collection('appointments').add({
+      String appointmentId =
+          FirebaseFirestore.instance.collection('appointments').doc().id;
+
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(appointmentId)
+          .set({
+        'appointmentId': appointmentId,
         'userId': currentUser.uid,
         'userName': currentUser.displayName ?? 'Unknown',
         'userEmail': currentUser.email ?? 'Unknown',
-        'appointmentDateTime': combinedDateTime, // Save as DateTime
+        'appointmentDateTime': combinedDateTime,
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'scheduled',
         'title': 'Fever',
@@ -156,7 +163,9 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                   ],
                 ),
               ),
-
+              SizedBox(
+                height: 15,
+              ),
               Padding(
                 padding: const EdgeInsets.only(left: 18),
                 child: Text(
@@ -214,7 +223,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                           child: Text(
                             time,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected ? Colors.white : Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -225,8 +234,36 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                 ),
               ),
 
+              SizedBox(
+                height: 15,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: Text(
+                  "Please state the reason of your appointment",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff2A3E66),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Reason of appointment", // Placeholder text
+                    hintStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black), // Style of placeholder text
+                  ),
+                ),
+              ),
+
               // Book Appointment Button
-              SizedBox(height: 20),
+              SizedBox(height: 40),
               MaterialButton(
                 onPressed: () {
                   _bookAppointment();
@@ -246,6 +283,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 40),
             ],
           ),
         ),

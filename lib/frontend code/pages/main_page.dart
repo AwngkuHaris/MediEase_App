@@ -19,10 +19,10 @@ class _MainPageState extends State<MainPage> {
   // Define pages for each tab
   final List<Widget> _pages = [
     HomePage(),
-    HealthEdPage(),
-    AppointmentPage(),
-    ChatPage(),
-    ProfilePage(),
+  HealthEdPage(),
+  AppointmentPage(),
+  ChatPage(),
+  ProfilePage(),
   ];
   // Update the selected tab index
   void _onItemTapped(int index) {

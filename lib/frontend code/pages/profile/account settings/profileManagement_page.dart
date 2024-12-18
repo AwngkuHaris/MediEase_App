@@ -40,7 +40,7 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: 400,
+          
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -52,16 +52,17 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
               ? Center(child: CircularProgressIndicator())
               : Column(
                   children: [
+                    SizedBox(height: 10,),
                     CircleAvatar(
-                      backgroundImage: currentUser!.photoURL != null
-                          ? NetworkImage(currentUser!.photoURL!)
-                          : null,
-                      child: currentUser!.photoURL == null
-                          ? Text(currentUser!.displayName?[0] ?? '')
-                          : null,
-                      radius: 40,
-                    ),
-                    SizedBox(height: 20),
+                            backgroundImage: currentUser!.photoURL != null
+                                ? NetworkImage(currentUser!.photoURL!)
+                                : null,
+                            child: currentUser!.photoURL == null
+                                ? Text(currentUser!.displayName?[0] ?? '')
+                                : null,
+                            radius: 40,
+                          ),
+                    
                     ListTile(
                       leading: Icon(Icons.person_outline),
                       title: Text(

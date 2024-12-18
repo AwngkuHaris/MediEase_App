@@ -1,6 +1,7 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter/foundation.dart'; // Required for kIsWeb check
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -9,11 +10,18 @@ class AuthService {
     return _firebaseAuth.currentUser;
   }
 
-  //sign in method with google
-  signInWithGoogle() async {
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+  
 
-    if (gUser == null) return;
+  //sign in method with google
+Future<UserCredential?> signInWithGoogle() async {
+  if (kIsWeb) {
+    // Use signInWithPopup for web
+    final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+    return await _firebaseAuth.signInWithPopup(googleProvider);
+  } else {
+    // Mobile flow
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    if (gUser == null) return null;
 
     final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
@@ -22,6 +30,7 @@ class AuthService {
 
     return await _firebaseAuth.signInWithCredential(credential);
   }
+}
 
   //sign in method with Facebook
   Future<UserCredential?> signInWithFacebook() async {
