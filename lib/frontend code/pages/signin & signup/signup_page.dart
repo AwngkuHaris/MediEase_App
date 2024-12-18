@@ -184,21 +184,90 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 35),
 
               MaterialButton(
-                onPressed: () {},
-                minWidth: 300,
-                height: 50,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                color: Color(0xff05808C),
-                child: Text(
-                  "SIGN UP",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
+  onPressed: () async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    try {
+      // Get user input
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      final confirmPassword = _confirmPasswordController.text.trim();
+
+      // Validate input
+      if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Please fill in all fields.')),
+        );
+        return;
+      }
+
+      if (password != confirmPassword) {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Passwords do not match.')),
+        );
+        return;
+      }
+
+      // Call sign-up method
+      final userCredential = await _authService.signUp(
+        email: email,
+        password: password,
+      );
+
+      final user = userCredential?.user;
+
+      if (user != null) {
+        // Save user details to Firestore
+        final userDocRef = _firestore.collection('users').doc(user.uid);
+
+        await userDocRef.set({
+          'name': "user",
+          'email': user.email,
+          'profilePicture': user.photoURL ?? '',
+          'dateOfBirth': "",
+          'bloodType': "",
+          'allergies': "",
+          'chronicConditions': "None",
+          'covidVaccine': "",
+          'tetanusVaccine': "",
+          'hpvVaccine': "",
+          'primaryContact': "",
+          'secondaryContact': "",
+          'notes': "",
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Sign-up successful!')),
+        );
+      } else {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Sign-up failed. Please try again.')),
+        );
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+      print('Sign-up error: $e');
+    }
+  },
+  minWidth: 300,
+  height: 50,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(15),
+  ),
+  color: const Color(0xff05808C),
+  child: const Text(
+    "SIGN UP",
+    style: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+  ),
+),
+
               const SizedBox(height: 16),
 
               Text(
