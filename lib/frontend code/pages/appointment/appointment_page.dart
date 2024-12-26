@@ -212,7 +212,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   ),
                                 ],
                               ),
-                              Text("|"),
+                              const Text("|"),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -243,7 +243,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                color: Color(0xff2A3E66),
+                                color: const Color(0xff2A3E66),
                                 onPressed: () {
                                   // Reschedule logic
                                 },
@@ -258,7 +258,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                color: Color(0xffD9534F),
+                                color: const Color(0xffD9534F),
                                 onPressed: () async {
                                   final String appointmentId = appointment[
                                       'appointmentId']; // Ensure this key is available
@@ -267,7 +267,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   // Refresh the UI
                                   setState(() {});
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                         content: Text(
                                             'Appointment canceled successfully!')),
                                   );
@@ -362,8 +362,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Color(0xff00589F),
-                child: Text(
+                color: const Color(0xff00589F),
+                child: const Text(
                   "Book New Appointment",
                   style: TextStyle(
                     fontSize: 16,
@@ -408,10 +408,10 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: subtitle.isNotEmpty
-          ? Text(subtitle, style: TextStyle(fontSize: 12))
+          ? Text(subtitle, style: const TextStyle(fontSize: 12))
           : null,
     );
   }

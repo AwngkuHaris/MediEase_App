@@ -6,7 +6,7 @@ import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_pa
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signup_page.dart';
 
 class AuthStateListener extends StatelessWidget {
-  const AuthStateListener({Key? key}) : super(key: key);
+  const AuthStateListener({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,10 @@ class AuthStateListener extends StatelessWidget {
         }
         if (snapshot.hasData) {
           // User is signed in
-          return MainPage(isSignedIn: true,); // Navigate to the home lpage
+          return const MainPage(isSignedIn: true,); // Navigate to the home lpage
         } else {
           // User is signed out
-          return SignUpPage(); // Navigate to the sign-in page
+          return const SignUpPage(); // Navigate to the sign-in page
         }
       },
     );

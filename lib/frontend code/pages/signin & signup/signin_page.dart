@@ -65,14 +65,14 @@ class _SignInPageState extends State<SigninPage> {
           children: [
             Text(
               _isSignIn ? "LogIn" : "Sign Up",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 20),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -81,30 +81,30 @@ class _SignInPageState extends State<SigninPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             // Email TextField
             Container(
               width: 300,
               height: 40,
-              padding: EdgeInsets.all(8.0), // Padding inside the container
+              padding: const EdgeInsets.all(8.0), // Padding inside the container
               decoration: BoxDecoration(
-                color: Color(0xff9AD4CC), // Background color of the container
+                color: const Color(0xff9AD4CC), // Background color of the container
                 borderRadius: BorderRadius.circular(12.0), // Rounded corners
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5), // Shadow color
                     spreadRadius: 2, // Spread radius
                     blurRadius: 5, // Blur radius
-                    offset: Offset(0, 3), // Changes position of shadow
+                    offset: const Offset(0, 3), // Changes position of shadow
                   ),
                 ],
               ),
               child: TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                 
                   hintText: "Enter your email address", // Placeholder text
                   hintStyle: TextStyle(
@@ -117,8 +117,8 @@ class _SignInPageState extends State<SigninPage> {
               ),
             ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 20),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -127,23 +127,23 @@ class _SignInPageState extends State<SigninPage> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             // Email TextField
             Container(
               width: 300,
               height: 40,
-              padding: EdgeInsets.all(8.0), // Padding inside the container
+              padding: const EdgeInsets.all(8.0), // Padding inside the container
               decoration: BoxDecoration(
-                color: Color(0xff9AD4CC), // Background color of the container
+                color: const Color(0xff9AD4CC), // Background color of the container
                 borderRadius: BorderRadius.circular(12.0), // Rounded corners
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5), // Shadow color
                     spreadRadius: 2, // Spread radius
                     blurRadius: 5, // Blur radius
-                    offset: Offset(0, 3), // Changes position of shadow
+                    offset: const Offset(0, 3), // Changes position of shadow
                   ),
                 ],
               ),
@@ -151,7 +151,7 @@ class _SignInPageState extends State<SigninPage> {
                 obscureText: true,
                 controller: _passwordController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   
                   hintText: "Password", // Placeholder text
                   hintStyle: TextStyle(

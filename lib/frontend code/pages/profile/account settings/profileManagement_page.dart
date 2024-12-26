@@ -30,12 +30,12 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Color(0xff9AD4CC),
-        title: Text("Profile Management"),
-        titleTextStyle: TextStyle(
+        backgroundColor: const Color(0xff9AD4CC),
+        title: const Text("Profile Management"),
+        titleTextStyle: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
       ),
       body: SingleChildScrollView(
@@ -49,22 +49,22 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
           margin: const EdgeInsets.all(15.0),
           padding: const EdgeInsets.all(16.0),
           child: userData == null
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Column(
                   children: [
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
                     CircleAvatar(
                             backgroundImage: currentUser!.photoURL != null
                                 ? NetworkImage(currentUser!.photoURL!)
                                 : null,
+                            radius: 40,
                             child: currentUser!.photoURL == null
                                 ? Text(currentUser!.displayName?[0] ?? '')
                                 : null,
-                            radius: 40,
                           ),
                     
                     ListTile(
-                      leading: Icon(Icons.person_outline),
+                      leading: const Icon(Icons.person_outline),
                       title: Text(
                         "Name",
                         style: TextStyle(
@@ -77,10 +77,10 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
                             fontSize: 15,
                             color: Colors.black.withOpacity(1),
                           )),
-                      trailing: GestureDetector(onTap: _showEditNameDialog,child: Icon(Icons.edit_outlined)),
+                      trailing: GestureDetector(onTap: _showEditNameDialog,child: const Icon(Icons.edit_outlined)),
                     ),
                     ListTile(
-                      leading: Icon(Icons.email_outlined),
+                      leading: const Icon(Icons.email_outlined),
                       title: Text(
                         "Email Address",
                         style: TextStyle(
@@ -93,10 +93,10 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
                             fontSize: 15,
                             color: Colors.black.withOpacity(1),
                           )),
-                      trailing: GestureDetector(onTap: _showEditEmailDialog,child: Icon(Icons.edit_outlined)),
+                      trailing: GestureDetector(onTap: _showEditEmailDialog,child: const Icon(Icons.edit_outlined)),
                     ),
                     ListTile(
-                      leading: Icon(Icons.phone_outlined),
+                      leading: const Icon(Icons.phone_outlined),
                       title: Text(
                         "Phone Number",
                         style: TextStyle(
@@ -109,7 +109,7 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
                             fontSize: 15,
                             color: Colors.black.withOpacity(1),
                           )),
-                      trailing: Icon(Icons.edit_outlined),
+                      trailing: const Icon(Icons.edit_outlined),
                     ),
                     
                   ],
@@ -125,23 +125,23 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Edit Name"),
+        title: const Text("Edit Name"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: "New Name"),
+              decoration: const InputDecoration(labelText: "New Name"),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel",style: TextStyle(color: Colors.black),),
+            child: const Text("Cancel",style: TextStyle(color: Colors.black),),
           ),
           MaterialButton(
-            color: Color(0xff9AD4CC),
+            color: const Color(0xff9AD4CC),
             onPressed: () async {
               await _userService.updateUserData(
                 name: nameController.text,
@@ -149,7 +149,7 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
               await _fetchUserData();
               Navigator.pop(context);
             },
-            child: Text("Save"),
+            child: const Text("Save"),
           ),
         ],
       ),
@@ -162,20 +162,20 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Edit Email"),
+        title: const Text("Edit Email"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: "New Email"),
+              decoration: const InputDecoration(labelText: "New Email"),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("Cancel"),
+            child: const Text("Cancel"),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -185,7 +185,7 @@ class _ProfilemanagementPageState extends State<ProfilemanagementPage> {
               await _fetchUserData();
               Navigator.pop(context);
             },
-            child: Text("Save"),
+            child: const Text("Save"),
           ),
         ],
       ),

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class BookappointmentPage extends StatefulWidget {
+  const BookappointmentPage({super.key});
+
   @override
   _BookappointmentPageState createState() => _BookappointmentPageState();
 }
@@ -29,7 +31,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   Future<void> _bookAppointment() async {
     if (_selectedDay == null || selectedTimeSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a date and a time slot')),
+        const SnackBar(content: Text('Please select a date and a time slot')),
       );
       return;
     }
@@ -53,7 +55,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please log in to book an appointment')),
+          const SnackBar(content: Text('Please log in to book an appointment')),
         );
         return;
       }
@@ -78,7 +80,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
 
       // Success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment booked successfully!')),
+        const SnackBar(content: Text('Appointment booked successfully!')),
       );
 
       // Clear selections after saving
@@ -98,19 +100,19 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff9AD4CC),
-        title: Text("Book Appointment"),
+        backgroundColor: const Color(0xff9AD4CC),
+        title: const Text("Book Appointment"),
         centerTitle: true,
       ),
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 18),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
                 child: Text(
                   "Choose Appointment Date",
                   style: TextStyle(
@@ -139,11 +141,11 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                           _focusedDay = focusedDay;
                         });
                       },
-                      headerStyle: HeaderStyle(
+                      headerStyle: const HeaderStyle(
                         titleCentered: true,
                         formatButtonVisible: false,
                       ),
-                      calendarStyle: CalendarStyle(
+                      calendarStyle: const CalendarStyle(
                         isTodayHighlighted: false,
                         selectedDecoration: BoxDecoration(
                           color: Color(0XFF00589F),
@@ -154,20 +156,20 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                       lastDay: DateTime.utc(2030, 3, 14),
                       focusedDay: _focusedDay,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Selected Date: ${_selectedDay != null ? DateFormat('yyyy-MM-dd').format(_selectedDay!) : "None"}',
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 18),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
                 child: Text(
                   "Choose Appointment Time",
                   style: TextStyle(
@@ -203,7 +205,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                         width: 100,
                         child: Container(
                           width: 100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Colors.teal[700]
@@ -211,7 +213,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: isSelected
                                 ? [
-                                    BoxShadow(
+                                    const BoxShadow(
                                       color: Colors.black26,
                                       blurRadius: 6,
                                       offset: Offset(2, 2),
@@ -234,11 +236,11 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                 ),
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 18),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
                 child: Text(
                   "Please state the reason of your appointment",
                   style: TextStyle(
@@ -249,8 +251,8 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                 ),
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15),
+              const Padding(
+                padding: EdgeInsets.only(left: 15.0, right: 15),
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: "Reason of appointment", // Placeholder text
@@ -263,7 +265,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
               ),
 
               // Book Appointment Button
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               MaterialButton(
                 onPressed: () {
                   _bookAppointment();
@@ -273,8 +275,8 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Color(0xff00589F),
-                child: Text(
+                color: const Color(0xff00589F),
+                child: const Text(
                   "Confirm Appointment",
                   style: TextStyle(
                     fontSize: 16,
@@ -283,7 +285,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
             ],
           ),
         ),

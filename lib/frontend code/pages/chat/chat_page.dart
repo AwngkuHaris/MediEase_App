@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 
 class ChatPage extends StatefulWidget {
-  ChatPage({super.key});
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -201,7 +201,7 @@ class _ChatPageState extends State<ChatPage> {
         currentUser: user,
         onSend: onSend,
         messages: messages,
-        messageOptions: MessageOptions(
+        messageOptions: const MessageOptions(
           currentUserContainerColor: Colors.white,
           currentUserTextColor: Colors.black,
         ),

@@ -8,7 +8,7 @@ import 'package:mediease_app/backend%20code/services/firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       body: Center(
         child: currentUser != null
             ? SingleChildScrollView(
@@ -59,12 +59,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             backgroundImage: currentUser!.photoURL != null
                                 ? NetworkImage(currentUser!.photoURL!)
                                 : null,
+                            radius: 40,
                             child: currentUser!.photoURL == null
                                 ? Text(currentUser!.displayName?[0] ?? '')
                                 : null,
-                            radius: 40,
                           ),
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,15 +73,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   "${userData?['name'] ?? 'Not set'}",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 17,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Text(
                                   currentUser!.email ?? "Guest",
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     decoration: TextDecoration.underline,
                                     fontSize: 13,
                                   ),
@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(left: 25),
                       child: Align(
                         alignment: Alignment.centerLeft,
@@ -163,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           () {Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AboutPage()
+                                builder: (context) => const AboutPage()
                               ),
                             );
                             // About App navigation
@@ -171,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     MaterialButton(
                       onPressed: () async {
                         try {
@@ -187,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                           // Show confirmation or redirect to login screen
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Logged out successfully')),
+                            const SnackBar(content: Text('Logged out successfully')),
                           );
                         } catch (e) {
                           // Handle any errors
@@ -198,8 +198,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      color: Color(0xff00589F),
-                      child: Text(
+                      color: const Color(0xff00589F),
+                      child: const Text(
                         "LOGOUT",
                         style: TextStyle(
                           fontSize: 16,
@@ -209,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
 
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
                   ],
                 ),
               )
@@ -252,10 +252,10 @@ class _ProfilePageState extends State<ProfilePage> {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: subtitle.isNotEmpty
-          ? Text(subtitle, style: TextStyle(fontSize: 10))
+          ? Text(subtitle, style: const TextStyle(fontSize: 10))
           : null,
       trailing: GestureDetector(
         onTap: onTap,

@@ -23,23 +23,37 @@ class FirestoreService {
     }
   }
 
-  // Update user data
   Future<void> updateUserData({
-    String? name,
-    String? email,
-    String? phoneNumber,
-  }) async {
-    User? currentUser = _auth.currentUser;
-    if (currentUser == null) return;
+  String? name,
+  String? email,
+  String? dateOfBirth,
+  String? bloodType,
+  String? allergies,
+  String? chronicConditions,
+  String? covidVaccine,
+  String? tetanusVaccine,
+  String? hpvVaccine,
+  String? primaryContact,
+  String? secondaryContact,
+  String? notes,
+}) async {
+  User? currentUser = _auth.currentUser;
+  if (currentUser == null) return;
+  final userDoc = FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+  final data = {
+    if (name != null) 'name': name,
+    if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
+    if (bloodType != null) 'bloodType': bloodType,
+    if (allergies != null) 'allergies': allergies,
+    if (chronicConditions != null) 'chronicConditions': chronicConditions,
+    if (covidVaccine != null) 'covidVaccine': covidVaccine,
+    if (tetanusVaccine != null) 'tetanusVaccine': tetanusVaccine,
+    if (hpvVaccine != null) 'hpvVaccine': hpvVaccine,
+    if (primaryContact != null) 'primaryContact': primaryContact,
+    if (secondaryContact != null) 'secondaryContact': secondaryContact,
+    if (notes != null) 'notes': notes,
+  };
+  await userDoc.update(data);
+}
 
-    try {
-      await _firestore.collection('users').doc(currentUser.uid).update({
-        if (name != null) 'name': name,
-        if (email != null) 'email': email,
-        if (phoneNumber != null) 'phoneNumber': phoneNumber,
-      });
-    } catch (e) {
-      print("Error updating user data: $e");
-    }
-  }
 }

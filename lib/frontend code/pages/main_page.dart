@@ -7,7 +7,7 @@ import 'package:mediease_app/frontend%20code/pages/profile/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   final bool isSignedIn;
-  const MainPage({Key? key, required this.isSignedIn}) : super(key: key);
+  const MainPage({super.key, required this.isSignedIn});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -18,9 +18,9 @@ class _MainPageState extends State<MainPage> {
 
   // Define pages for each tab
   final List<Widget> _pages = [
-    HomePage(),
-  HealthEdPage(),
-  AppointmentPage(),
+    const HomePage(),
+  const HealthEdPage(),
+  const AppointmentPage(),
   ChatPage(),
   ProfilePage(),
   ];
@@ -36,25 +36,25 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications))
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
         ],
-        backgroundColor: Color(0xff9AD4CC),
+        backgroundColor: const Color(0xff9AD4CC),
       ),
       bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(16), topRight: Radius.circular(16)),
         child: BottomNavigationBar(
             currentIndex: _selectedIndex, // Highlight the selected tab
             onTap: _onItemTapped, // Handle tap events
             selectedFontSize: 12,
-            selectedIconTheme: IconThemeData(size: 25),
+            selectedIconTheme: const IconThemeData(size: 25),
             unselectedFontSize: 10,
-            unselectedIconTheme: IconThemeData(size: 18),
+            unselectedIconTheme: const IconThemeData(size: 18),
             selectedItemColor: Colors.black,
             unselectedItemColor: Colors.black,
             type: BottomNavigationBarType
                 .fixed, // Ensure all icons remain visible
-            items: [
+            items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
                 label: "Home",

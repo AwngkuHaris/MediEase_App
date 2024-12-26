@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Color(0xff9AD4CC),
+                  color: const Color(0xff9AD4CC),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 width: MediaQuery.of(context).size.width,
@@ -93,13 +93,13 @@ class _HomePageState extends State<HomePage> {
                             backgroundImage: currentUser!.photoURL != null
                                 ? NetworkImage(currentUser!.photoURL!)
                                 : null,
+                            radius: 40,
                             child: currentUser!.photoURL == null
                                 ? Text(currentUser!.displayName?[0] ?? '')
                                 : null,
-                            radius: 40,
                           ),
                     
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,10 +108,10 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             "Hello ${userData?['name'] ?? 'Not set'}",
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 17, fontWeight: FontWeight.bold),
                           ),
-                          Text(
+                          const Text(
                             "Welcome to MediEase",
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -124,8 +124,8 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+              const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: [
                     Text(
@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                           Container(
                             padding: const EdgeInsets.all(10.0),
                             decoration: BoxDecoration(
-                              color: Color(0xff279DA4),
+                              color: const Color(0xff279DA4),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
@@ -225,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ],
                                 ),
-                                Text(
+                                const Text(
                                   "|",
                                   style: TextStyle(
                                     color: Colors.white,
@@ -260,11 +260,11 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+              const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: [
                     Text(
@@ -292,7 +292,7 @@ class _HomePageState extends State<HomePage> {
                           .withOpacity(0.2), // Shadow color (with opacity)
                       spreadRadius: 3, // How much the shadow spreads
                       blurRadius: 10, // How blurry the shadow is
-                      offset: Offset(0, 3), // Shadow position (x and y offset)
+                      offset: const Offset(0, 3), // Shadow position (x and y offset)
                     ),
                   ],
                 ),
@@ -302,11 +302,11 @@ class _HomePageState extends State<HomePage> {
                     15.0), // Adds space around the container
                 padding: const EdgeInsets.all(
                     16.0), // Adds space inside the container
-                child: Row(
+                child: const Row(
                   children: [],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
             ],
