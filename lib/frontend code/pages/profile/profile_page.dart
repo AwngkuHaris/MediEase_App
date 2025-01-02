@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/about%20app/about_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/accountSettings_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/helpSupport.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/medicalRecord_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 import 'package:mediease_app/backend%20code/services/firestore.dart';
@@ -153,7 +154,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           "",
                           Icons.arrow_forward,
                           () {
-                            // Help navigation
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Helpsupport(),
+                              ),
+                            );
                           },
                         ),
                         _buildListTile(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/deleteAccount_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/passwordPrivacy_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/profileManagement_page.dart';
 
 class AccountsettingsPage extends StatelessWidget {
@@ -92,7 +94,7 @@ class AccountsettingsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AccountsettingsPage(),
+                        builder: (context) => PasswordPrivacyPage(),
                       ),
                     );
                   },
@@ -102,7 +104,13 @@ class AccountsettingsPage extends StatelessWidget {
                   "",
                   Icons.arrow_forward,
                   () {
-                    // Feedback navigation
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DeleteaccountPage(),
+                      ),
+                    );
+                    
                   },
                 ),
                 
