@@ -18,11 +18,11 @@ class _MainPageState extends State<MainPage> {
 
   // Define pages for each tab
   final List<Widget> _pages = [
-    const HomePage(),
-  const HealthEdPage(),
-  const AppointmentPage(),
-  ChatPage(),
-  ProfilePage(),
+    HomePage(),
+    HealthEdPage(),
+    AppointmentPage(),
+    ChatPage(),
+    ProfilePage(),
   ];
   // Update the selected tab index
   void _onItemTapped(int index) {
@@ -35,6 +35,12 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Removes the back button
+        title: Image.asset(
+          'assets/images/mediease_logo.png', // Replace with your image asset path
+          height: 125,
+        ),
+        centerTitle: true, // Center the image in the AppBar
         actions: [
           IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
         ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:mediease_app/frontend%20code/pages/main_page.dart';
+import 'package:flutter/gestures.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signup_page.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -11,6 +13,7 @@ class SigninPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SigninPage> {
+  bool _isLoading = false; // State to track loading
   // Controllers for email and password text fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -19,52 +22,73 @@ class _SignInPageState extends State<SigninPage> {
   final AuthService _authService = AuthService();
 
   // Track whether user wants to sign in or sign up
-  bool _isSignIn = true;
 
   // Method to handle email/password authentication
   Future<void> _handleAuth() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
     try {
-      UserCredential? userCredential;
+      // Simulate a 1-second delay
+      await Future.delayed(const Duration(seconds: 1));
 
-      if (_isSignIn) {
-        // Sign In
-        userCredential = await _authService.signIn(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-      } else {
-        // Sign Up
-        userCredential = await _authService.signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-      }
+      // Your authentication logic here
+      UserCredential? userCredential = await _authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
       if (userCredential != null) {
-        // Navigate to the next page if authentication is successful
-        
+        // Navigate to the MainPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainPage(isSignedIn: true),
+          ),
+        );
       }
     } catch (e) {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(_isSignIn ? 'Sign in failed: $e' : 'Sign up failed: $e'),
+          content: Text('Sign in failed: $e'),
         ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
+        body: Stack(children: [
+      Positioned.fill(
+        child: Image.asset(
+          'assets/images/login.jpeg', // Path to your image
+          fit:
+              BoxFit.cover, // Ensures the image fills the screen proportionally
+        ),
+      ),
+      // White Overlay
+      Positioned.fill(
+        child: Container(
+          color: Colors.white.withAlpha(170), // Adjust opacity as needed
+        ),
+      ),
+      Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Image.asset(
+              'assets/images/mediease_logo.png', // Replace with your image asset path
+              height: 140,
+            ),
             Text(
-              _isSignIn ? "LogIn" : "Sign Up",
+              "Login",
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
 
@@ -88,9 +112,11 @@ class _SignInPageState extends State<SigninPage> {
             Container(
               width: 300,
               height: 40,
-              padding: const EdgeInsets.all(8.0), // Padding inside the container
+              padding:
+                  const EdgeInsets.all(8.0), // Padding inside the container
               decoration: BoxDecoration(
-                color: const Color(0xff9AD4CC), // Background color of the container
+                color: const Color(
+                    0xff9AD4CC), // Background color of the container
                 borderRadius: BorderRadius.circular(12.0), // Rounded corners
                 boxShadow: [
                   BoxShadow(
@@ -105,12 +131,10 @@ class _SignInPageState extends State<SigninPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                
                   hintText: "Enter your email address", // Placeholder text
                   hintStyle: TextStyle(
-                    fontSize: 
-                    13,
-                    fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white), // Style of placeholder text
                   border: InputBorder.none, // Removes the default border
                 ),
@@ -134,9 +158,11 @@ class _SignInPageState extends State<SigninPage> {
             Container(
               width: 300,
               height: 40,
-              padding: const EdgeInsets.all(8.0), // Padding inside the container
+              padding:
+                  const EdgeInsets.all(8.0), // Padding inside the container
               decoration: BoxDecoration(
-                color: const Color(0xff9AD4CC), // Background color of the container
+                color: const Color(
+                    0xff9AD4CC), // Background color of the container
                 borderRadius: BorderRadius.circular(12.0), // Rounded corners
                 boxShadow: [
                   BoxShadow(
@@ -152,76 +178,198 @@ class _SignInPageState extends State<SigninPage> {
                 controller: _passwordController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
-                  
                   hintText: "Password", // Placeholder text
                   hintStyle: TextStyle(
-                    fontSize: 
-                    13,
-                    fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white), // Style of placeholder text
                   border: InputBorder.none, // Removes the default border
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
-
-            // Toggle between Sign In and Sign Up
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _isSignIn = !_isSignIn;
-                });
-              },
-              child: Text(_isSignIn
-                  ? "Don't have an account? Sign Up"
-                  : "Already have an account? Sign In"),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 25),
 
             // Main Authentication Button
-            ElevatedButton(
-              onPressed: _handleAuth,
-              child: Text(_isSignIn ? "Sign In" : "Sign Up"),
+            MaterialButton(
+              minWidth: 300,
+              height: 50,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              color: const Color(0xff05808C),
+              child: _isLoading
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                    )
+                  : const Text(
+                      "LOGIN",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+              onPressed: _isLoading
+                  ? null
+                  : _handleAuth, // Disable button when loading
             ),
+            const SizedBox(height: 20),
+            const Text(
+              "or login with",
+              style: TextStyle(fontSize: 12),
+            ),
+
             const SizedBox(height: 16),
 
-            // Existing Social Sign-In Buttons
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  final userCredential = await _authService.signInWithGoogle();
-                  if (userCredential != null) {}
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Google Sign-In failed: $e')),
-                  );
-                }
-              },
-              child: const Text("Sign in with Google"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final userCredential =
+                          await _authService.signInWithGoogle();
+                      if (userCredential != null) {
+                        // Handle successful sign-in
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Google Sign-In failed: $e')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(), // Makes the button circular
+                    padding: const EdgeInsets.all(5), // Adjust padding for size
+                    backgroundColor: Colors.white, // Background color
+                    elevation: 5, // Button elevation
+                  ),
+                  child: Image.asset(
+                    'assets/images/google_logo.png', // Path to Google logo
+                    width: 35, // Adjust the size of the logo
+                    height: 35,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final userCredential =
+                          await _authService.signInWithFacebook();
+                      if (userCredential != null) {
+                        // Handle successful sign-in
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Facebook Sign-In failed: $e')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(), // Makes the button circular
+                    padding: const EdgeInsets.all(5), // Adjust padding for size
+                    backgroundColor: Colors.white, // Background color
+                    elevation: 5, // Button elevation
+                  ),
+                  child: Image.asset(
+                    'assets/images/facebook_logo.png', // Path to Facebook logo
+                    width: 35, // Adjust the size of the logo
+                    height: 35,
+                  ),
+                )
+              ],
             ),
-            const SizedBox(height: 16),
 
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  final userCredential =
-                      await _authService.signInWithFacebook();
-                  if (userCredential != null) {
-                    
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Facebook Sign-In failed: $e')),
-                  );
-                }
-              },
-              child: const Text("Sign in with Facebook"),
+            Spacer(),
+
+            SizedBox(
+              width: 250,
+              child: RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'By continuing, you agree to ',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 10), // Color for first part
+                    ),
+                    TextSpan(
+                      text: 'MediEase User Service Agreement ',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 10), // Color for second part
+                    ),
+                    TextSpan(
+                      text: 'and ',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 10), // Color for third part
+                    ),
+                    TextSpan(
+                      text: 'Privacy Policy ',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 10), // Color for second part
+                    ),
+                    TextSpan(
+                      text:
+                          'and understand how we collect, use, and share your data. ',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 10), // Color for first part
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            Expanded(
+              child: Container(
+                height: 100, // Fixed height of the container at the bottom
+                width: MediaQuery.of(context).size.width,
+                color: const Color(0xffD9D9D9),
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'Have no account yet? ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'Create an account',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignUpPage()),
+                              );
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
-    );
+    ]));
   }
 
   // Dispose controllers to prevent memory leaks

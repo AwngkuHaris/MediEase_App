@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mediease_app/backend%20code/services/firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
+import 'package:flutter/gestures.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
+  bool get isSignedIn => currentUser != null;
+
   final FirestoreService _userService = FirestoreService();
   Map<String, dynamic>? userData;
 
@@ -89,7 +93,8 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    isSignedIn
+                        ? CircleAvatar(
                             backgroundImage: currentUser!.photoURL != null
                                 ? NetworkImage(currentUser!.photoURL!)
                                 : null,
@@ -97,8 +102,10 @@ class _HomePageState extends State<HomePage> {
                             child: currentUser!.photoURL == null
                                 ? Text(currentUser!.displayName?[0] ?? '')
                                 : null,
+                          )
+                        : CircleAvatar(
+                            child: Icon(Icons.person, size: 28),
                           ),
-                    
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
@@ -106,7 +113,9 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Hello ${userData?['name'] ?? 'Not set'}",
+                            isSignedIn
+                                ? "Hello ${userData?['name'] ?? 'User'}"
+                                : "Welcome, Guest",
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 fontSize: 17, fontWeight: FontWeight.bold),
@@ -143,123 +152,180 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              FutureBuilder(
-                future: fetchClosestAppointment(),
-                builder:
-                    (context, AsyncSnapshot<Map<String, dynamic>?> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
+              isSignedIn
+                  ? FutureBuilder(
+                      future: fetchClosestAppointment(),
+                      builder: (context,
+                          AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        }
 
-                  final appointment = snapshot.data;
+                        final appointment = snapshot.data;
 
-                  if (appointment == null) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text(
-                          'No upcoming appointments.',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    );
-                  }
-
-                  // Display the closest appointment in a card
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            appointment['title'],
-                            style: const TextStyle(
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
+                        if (appointment == null) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                'No upcoming appointments.',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
                             ),
+                          );
+                        }
+
+                        // Display the closest appointment in a card
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                              color: const Color(0xff279DA4),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Date:",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      appointment['formattedDate'],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Text(
-                                  "|",
-                                  style: TextStyle(
-                                    color: Colors.white,
+                                Text(
+                                  appointment['title'],
+                                  style: const TextStyle(
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Time:",
-                                      style: TextStyle(
-                                        color: Colors.white,
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xff279DA4),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Date:",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            appointment['formattedDate'],
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    Text(
-                                      appointment['formattedTime'],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
+                                      const Text(
+                                        "|",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Time:",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            appointment['formattedTime'],
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          
+                        );
+                      },
+                    )
+                  : Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Log in ',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SigninPage(), // Replace with your SigninPage
+                                      ),
+                                    );
+                                  },
+                              ),
+                              const TextSpan(
+                                text: 'to view your upcoming appointments.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors
+                                      .black, // Normal text style for non-clickable part
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  );
-                },
-              ),
               const SizedBox(
                 height: 10,
               ),
@@ -292,7 +358,8 @@ class _HomePageState extends State<HomePage> {
                           .withOpacity(0.2), // Shadow color (with opacity)
                       spreadRadius: 3, // How much the shadow spreads
                       blurRadius: 10, // How blurry the shadow is
-                      offset: const Offset(0, 3), // Shadow position (x and y offset)
+                      offset: const Offset(
+                          0, 3), // Shadow position (x and y offset)
                     ),
                   ],
                 ),

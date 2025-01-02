@@ -12,15 +12,19 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  Future<Map<String, dynamic>?> fetchClosestAppointment() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
+  // Class-level getter for current user
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 
+  // Check if user is signed in
+  bool get isSignedIn => currentUser != null;
+
+  Future<Map<String, dynamic>?> fetchClosestAppointment() async {
     if (currentUser == null) return null;
 
     // Query appointments sorted by appointmentDateTime
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('appointments')
-        .where('userId', isEqualTo: currentUser.uid)
+        .where('userId', isEqualTo: currentUser!.uid)
         .where('appointmentDateTime',
             isGreaterThan: DateTime.now()) // Future appointments
         .orderBy('appointmentDateTime')
@@ -98,8 +102,51 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xff9AD4CC),
+      body: SafeArea(
+        child: isSignedIn ? _buildSignedInUI() : _buildUnregisteredUserUI(),
+      ),
+    );
+  }
+
+
+
+
+  Widget _buildSection(BuildContext context, List<Widget> tiles) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(5.0),
+      child: Column(children: tiles),
+    );
+  }
+
+  Widget _buildListTile(
+    String title,
+    String subtitle,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: subtitle.isNotEmpty
+          ? Text(subtitle, style: const TextStyle(fontSize: 12))
+          : null,
+    );
+  }
+
+  Widget _buildSignedInUI() {
     return Scaffold(
       backgroundColor: const Color(0xff9AD4CC),
       body: SafeArea(
@@ -387,32 +434,42 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 
-  Widget _buildSection(BuildContext context, List<Widget> tiles) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+  Widget _buildUnregisteredUserUI() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'You are not logged in.',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the sign-in page
+                Navigator.pushNamed(
+                    context, '/signin'); // Replace with your sign-in route
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff00589F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: const Text(
+                'Log In to Book an Appointment',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       ),
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(5.0),
-      child: Column(children: tiles),
-    );
-  }
-
-  Widget _buildListTile(
-    String title,
-    String subtitle,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: subtitle.isNotEmpty
-          ? Text(subtitle, style: const TextStyle(fontSize: 12))
-          : null,
     );
   }
 }

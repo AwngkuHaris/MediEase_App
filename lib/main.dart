@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:mediease_app/backend%20code/consts.dart';
 import 'package:mediease_app/backend%20code/firebase_options.dart';
 import 'package:mediease_app/backend%20code/services/user_status.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 
 void main() async {
   Gemini.init(apiKey: GEMINI_API_KEY);
@@ -39,6 +40,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const AuthStateListener(),
+
+      routes: {
+        '/signin': (context) => SigninPage(), // Define the SigninPage route
+      }
     );
   }
 }

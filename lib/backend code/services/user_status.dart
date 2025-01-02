@@ -14,16 +14,12 @@ class AuthStateListener extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          // While checking the authentication state, show a loading spinner
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
-        if (snapshot.hasData) {
-          // User is signed in
-          return const MainPage(isSignedIn: true,); // Navigate to the home lpage
-        } else {
-          // User is signed out
-          return const SignUpPage(); // Navigate to the sign-in page
-        }
+        final bool isSignedIn = snapshot.hasData;
+        return MainPage(isSignedIn: isSignedIn);
       },
     );
   }

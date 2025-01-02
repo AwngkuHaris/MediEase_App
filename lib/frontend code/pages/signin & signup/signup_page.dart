@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
+import 'package:flutter/gestures.dart';
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -63,9 +66,11 @@ class _SignUpPageState extends State<SignUpPage> {
               Container(
                 width: 300,
                 height: 40,
-                padding: const EdgeInsets.all(8.0), // Padding inside the container
+                padding:
+                    const EdgeInsets.all(8.0), // Padding inside the container
                 decoration: BoxDecoration(
-                  color: const Color(0xff9AD4CC), // Background color of the container
+                  color: const Color(
+                      0xff9AD4CC), // Background color of the container
                   borderRadius: BorderRadius.circular(12.0), // Rounded corners
                   boxShadow: [
                     BoxShadow(
@@ -107,9 +112,11 @@ class _SignUpPageState extends State<SignUpPage> {
               Container(
                 width: 300,
                 height: 40,
-                padding: const EdgeInsets.all(8.0), // Padding inside the container
+                padding:
+                    const EdgeInsets.all(8.0), // Padding inside the container
                 decoration: BoxDecoration(
-                  color: const Color(0xff9AD4CC), // Background color of the container
+                  color: const Color(
+                      0xff9AD4CC), // Background color of the container
                   borderRadius: BorderRadius.circular(12.0), // Rounded corners
                   boxShadow: [
                     BoxShadow(
@@ -153,9 +160,11 @@ class _SignUpPageState extends State<SignUpPage> {
               Container(
                 width: 300,
                 height: 40,
-                padding: const EdgeInsets.all(8.0), // Padding inside the container
+                padding:
+                    const EdgeInsets.all(8.0), // Padding inside the container
                 decoration: BoxDecoration(
-                  color: const Color(0xff9AD4CC), // Background color of the container
+                  color: const Color(
+                      0xff9AD4CC), // Background color of the container
                   borderRadius: BorderRadius.circular(12.0), // Rounded corners
                   boxShadow: [
                     BoxShadow(
@@ -184,89 +193,96 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 35),
 
               MaterialButton(
-  onPressed: () async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                onPressed: () async {
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    try {
-      // Get user input
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-      final confirmPassword = _confirmPasswordController.text.trim();
+                  try {
+                    // Get user input
+                    final email = _emailController.text.trim();
+                    final password = _passwordController.text.trim();
+                    final confirmPassword =
+                        _confirmPasswordController.text.trim();
 
-      // Validate input
-      if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Please fill in all fields.')),
-        );
-        return;
-      }
+                    // Validate input
+                    if (email.isEmpty ||
+                        password.isEmpty ||
+                        confirmPassword.isEmpty) {
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(
+                            content: Text('Please fill in all fields.')),
+                      );
+                      return;
+                    }
 
-      if (password != confirmPassword) {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Passwords do not match.')),
-        );
-        return;
-      }
+                    if (password != confirmPassword) {
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(
+                            content: Text('Passwords do not match.')),
+                      );
+                      return;
+                    }
 
-      // Call sign-up method
-      final userCredential = await _authService.signUp(
-        email: email,
-        password: password,
-      );
+                    // Call sign-up method
+                    final userCredential = await _authService.signUp(
+                      email: email,
+                      password: password,
+                    );
 
-      final user = userCredential?.user;
+                    final user = userCredential?.user;
 
-      if (user != null) {
-        // Save user details to Firestore
-        final userDocRef = _firestore.collection('users').doc(user.uid);
+                    if (user != null) {
+                      // Save user details to Firestore
+                      final userDocRef =
+                          _firestore.collection('users').doc(user.uid);
 
-        await userDocRef.set({
-          'name': "user",
-          'email': user.email,
-          'profilePicture': user.photoURL ?? '',
-          'dateOfBirth': "",
-          'bloodType': "",
-          'allergies': "",
-          'chronicConditions': "None",
-          'covidVaccine': "",
-          'tetanusVaccine': "",
-          'hpvVaccine': "",
-          'primaryContact': "",
-          'secondaryContact': "",
-          'notes': "",
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+                      await userDocRef.set({
+                        'name': "user",
+                        'email': user.email,
+                        'profilePicture': user.photoURL ?? '',
+                        'dateOfBirth': "",
+                        'bloodType': "",
+                        'allergies': "",
+                        'chronicConditions': "None",
+                        'covidVaccine': "",
+                        'tetanusVaccine': "",
+                        'hpvVaccine': "",
+                        'primaryContact': "",
+                        'secondaryContact': "",
+                        'notes': "",
+                        'createdAt': FieldValue.serverTimestamp(),
+                      });
 
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Sign-up successful!')),
-        );
-      } else {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Sign-up failed. Please try again.')),
-        );
-      }
-    } catch (e) {
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
-      print('Sign-up error: $e');
-    }
-  },
-  minWidth: 300,
-  height: 50,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-  ),
-  color: const Color(0xff05808C),
-  child: const Text(
-    "SIGN UP",
-    style: TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      color: Colors.white,
-    ),
-  ),
-),
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(content: Text('Sign-up successful!')),
+                      );
+                    } else {
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(
+                            content: Text('Sign-up failed. Please try again.')),
+                      );
+                    }
+                  } catch (e) {
+                    scaffoldMessenger.showSnackBar(
+                      SnackBar(content: Text('An error occurred: $e')),
+                    );
+                    print('Sign-up error: $e');
+                  }
+                },
+                minWidth: 300,
+                height: 50,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: const Color(0xff05808C),
+                child: const Text(
+                  "SIGN UP",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 16),
 
@@ -323,7 +339,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           // Safely show a snackbar
                           if (mounted) {
                             scaffoldMessenger.showSnackBar(
-                              const SnackBar(content: Text('Sign-in successful!')),
+                              const SnackBar(
+                                  content: Text('Sign-in successful!')),
                             );
                           }
                         } else {
@@ -359,7 +376,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     onPressed: () {
                       // Handle the sign-in logic here
                     },
-                    shape: const CircleBorder(), // This makes the button circular
+                    shape:
+                        const CircleBorder(), // This makes the button circular
                     padding: const EdgeInsets.all(
                         20), // Adjust padding for size of the circle
                     elevation: 5, // Shadow of the button
@@ -371,7 +389,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ],
               ),
 
-              const SizedBox(height: 80),
+              Spacer(),
 
               SizedBox(
                 width: 250,
@@ -425,25 +443,38 @@ class _SignUpPageState extends State<SignUpPage> {
                   color: const Color(0xffD9D9D9),
                   child: Center(
                     child: RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                         children: [
-                          TextSpan(
+                          const TextSpan(
                             text: 'Already have an account? ',
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12), // Color for first part
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
                           ),
                           TextSpan(
                             text: 'Login',
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 12), // Color for second part
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Navigate to the SignInPage
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SigninPage(),
+                                  ),
+                                );
+                              },
                           ),
                         ],
                       ),
                     ),
                   ),
-                ), // This will fill the remaining space
+                ),
               ),
             ],
           ),
