@@ -83,10 +83,12 @@ class _SignInPageState extends State<SigninPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height:30),
             Image.asset(
               'assets/images/mediease_logo.png', // Replace with your image asset path
-              height: 140,
+              height: 70,
             ),
+            SizedBox(height:30),
             Text(
               "Login",
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),

@@ -54,10 +54,12 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(height: 20),
                 Image.asset(
                   'assets/images/mediease_logo.png', // Replace with your image asset path
-                  height: 100,
+                  height: 70,
                 ),
+                SizedBox(height: 20),
                 const Text(
                   "Sign Up",
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
