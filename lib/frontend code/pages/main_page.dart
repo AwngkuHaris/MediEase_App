@@ -16,20 +16,21 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0; // Track the selected tab
 
-  // Define pages for each tab
-  final List<Widget> _pages = [
-    HomePage(),
-    HealthEdPage(),
-    AppointmentPage(),
-    ChatPage(),
-    ProfilePage(),
-  ];
   // Update the selected tab index
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
+
+  // Define pages for each tab
+  List<Widget> get _pages => [
+        HomePage(),
+        HealthEdPage(),
+        AppointmentPage(onTabChange: _onItemTapped),
+        ChatPage(),
+        ProfilePage(),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class _MainPageState extends State<MainPage> {
         automaticallyImplyLeading: false, // Removes the back button
         title: Image.asset(
           'assets/images/mediease_logo.png', // Replace with your image asset path
-          height: 125,
+          height: 50,
         ),
         centerTitle: true, // Center the image in the AppBar
         actions: [

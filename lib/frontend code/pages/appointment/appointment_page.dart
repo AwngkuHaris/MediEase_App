@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/bookAppointment_page.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class AppointmentPage extends StatefulWidget {
-  const AppointmentPage({super.key});
+  final Function(int) onTabChange; // Accept a callback for tab change
+
+  const AppointmentPage({super.key, required this.onTabChange});
 
   @override
   State<AppointmentPage> createState() => _AppointmentPageState();
@@ -102,8 +105,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,9 +114,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
       ),
     );
   }
-
-
-
 
   Widget _buildSection(BuildContext context, List<Widget> tiles) {
     return Container(
@@ -307,17 +305,75 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 ),
                                 color: const Color(0xffD9534F),
                                 onPressed: () async {
-                                  final String appointmentId = appointment[
-                                      'appointmentId']; // Ensure this key is available
-                                  await deleteAppointment(appointmentId);
-
-                                  // Refresh the UI
-                                  setState(() {});
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Appointment canceled successfully!')),
+                                  // Show a confirmation dialog
+                                  final bool? confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Cancel Appointment'),
+                                        content: const Text(
+                                            'Are you sure you want to cancel this appointment?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text('No'),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color(0xffD9534F),
+                                            ),
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
+
+                                  // If the user confirms, proceed with cancellation
+                                  if (confirm == true) {
+                                    final String appointmentId =
+                                        appointment['appointmentId'];
+                                    await deleteAppointment(appointmentId);
+
+                                    // Show a success dialog with Lottie animation
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                height: 100,
+                                                child: Lottie.asset(
+                                                    'assets/animations/success.json',repeat: false),
+                                              ),
+                                              const Text(
+                                                'Appointment canceled successfully!',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                    context); // Close success dialog
+                                                setState(
+                                                    () {}); // Refresh the UI
+                                              },
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                                 child: const Text(
                                   "Cancel Appointment",
@@ -422,7 +478,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BookappointmentPage(),
+                      builder: (context) =>
+                          BookappointmentPage(onTabChange: widget.onTabChange),
                     ),
                   );
                 },

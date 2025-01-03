@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class BookappointmentPage extends StatefulWidget {
-  const BookappointmentPage({super.key});
+  final Function(int) onTabChange;
+  const BookappointmentPage({super.key, required this.onTabChange});
 
   @override
   _BookappointmentPageState createState() => _BookappointmentPageState();
@@ -28,7 +30,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   ];
 
   // Function to book an appointment
-  Future<void> _bookAppointment() async {
+  Future<void> _bookAppointment(BuildContext context) async {
     if (_selectedDay == null || selectedTimeSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a date and a time slot')),
@@ -36,7 +38,6 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
       return;
     }
 
-    // Combine date and time into a single DateTime object
     try {
       // Convert selectedTimeSlot (e.g., '8 AM') into a 24-hour time
       final timeFormat = DateFormat('h a'); // Parse '8 AM', '12 PM', etc.
@@ -83,11 +84,9 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
         const SnackBar(content: Text('Appointment booked successfully!')),
       );
 
-      // Clear selections after saving
-      setState(() {
-        _selectedDay = null;
-        selectedTimeSlot = null;
-      });
+      // Navigate to the appointment page
+      widget.onTabChange(2); // Switch to the "Appointments" tab
+      Navigator.pop(context); // Close the booking screen
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -159,8 +158,8 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                     const SizedBox(height: 10),
                     Text(
                       'Selected Date: ${_selectedDay != null ? DateFormat('yyyy-MM-dd').format(_selectedDay!) : "None"}',
-                      style:
-                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -268,7 +267,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
               const SizedBox(height: 40),
               MaterialButton(
                 onPressed: () {
-                  _bookAppointment();
+                  _bookAppointment(context);
                 },
                 minWidth: 300,
                 height: 50,

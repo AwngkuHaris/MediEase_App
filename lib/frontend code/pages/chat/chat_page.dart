@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> {
 
     // Add the bot's initial message
     ChatMessage initialMessage = ChatMessage(
-      text: "Hello! 👋 How can I assist you today?\n\n"
+      text: "Hello! 👋 I am a Quick Chat Bot. How can I assist you today?\n\n"
           "Here are some common topics:\n"
           "1. Appointment Issues\n"
           "2. Health Education Resources\n"
@@ -207,8 +207,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
         inputOptions: InputOptions(
           inputDecoration: InputDecoration(
-            prefixIcon: const Icon(Icons.attachment),
-            suffixIcon: const Icon(Icons.camera_alt),
+            contentPadding: EdgeInsets.symmetric(horizontal: 25),
             fillColor: Colors.white,
             filled: true,
             hintText: 'Message....',

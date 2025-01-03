@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PasswordPrivacyPage extends StatefulWidget {
   const PasswordPrivacyPage({super.key});
@@ -13,13 +13,13 @@ class _PasswordPrivacyPageState extends State<PasswordPrivacyPage> {
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final User? currentUser  = FirebaseAuth.instance.currentUser ;
+  final User? currentUser = FirebaseAuth.instance.currentUser;
 
   bool allowNotifications = false; // Moved to class level
   bool enableLocation = false; // Moved to class level
 
   void _changePassword() async {
-    if (currentUser  == null) {
+    if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User  is not signed in.')),
       );
@@ -39,13 +39,13 @@ class _PasswordPrivacyPageState extends State<PasswordPrivacyPage> {
     try {
       // Re-authenticate the user
       final credential = EmailAuthProvider.credential(
-        email: currentUser !.email!,
+        email: currentUser!.email!,
         password: currentPassword,
       );
-      await currentUser !.reauthenticateWithCredential(credential);
+      await currentUser!.reauthenticateWithCredential(credential);
 
       // Update password
-      await currentUser !.updatePassword(newPassword);
+      await currentUser!.updatePassword(newPassword);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password updated successfully.')),
       );
@@ -100,60 +100,68 @@ class _PasswordPrivacyPageState extends State<PasswordPrivacyPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
- title: const Text('Manage Permissions'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SwitchListTile(
-                title: const Text('Allow Notifications'),
-                value: allowNotifications,
-                onChanged: (value) {
-                  setState(() {
-                    allowNotifications = value;
-                  });
-                },
+        // Use a StatefulBuilder to manage local state within the dialog
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Manage Permissions'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    title: const Text('Allow Notifications'),
+                    value: allowNotifications,
+                    onChanged: (value) {
+                      // Update the local state within the dialog
+                      setState(() {
+                        allowNotifications = value;
+                      });
+                    },
+                  ),
+                  SwitchListTile(
+                    title: const Text('Enable Location Services'),
+                    value: enableLocation,
+                    onChanged: (value) {
+                      // Update the local state within the dialog
+                      setState(() {
+                        enableLocation = value;
+                      });
+                    },
+                  ),
+                ],
               ),
-              SwitchListTile(
-                title: const Text('Enable Location Services'),
-                value: enableLocation,
-                onChanged: (value) {
-                  setState(() {
-                    enableLocation = value;
-                  });
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(currentUser ?.uid)
-                      .update({
-                    'notifications': allowNotifications,
-                    'location': enableLocation,
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Permissions updated.')),
-                  );
-                  Navigator.pop(context); // Close dialog after updating permissions
-                } catch (error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Failed to update permissions: $error')),
-                  );
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(currentUser?.uid)
+                          .update({
+                        'notifications': allowNotifications,
+                        'location': enableLocation,
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Permissions updated.')),
+                      );
+                      Navigator.pop(context); // Close dialog after saving
+                    } catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Failed to update permissions: $error')),
+                      );
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -186,7 +194,24 @@ class _PasswordPrivacyPageState extends State<PasswordPrivacyPage> {
 
             // Change Password Option
             GestureDetector(
-              onTap: _showChangePasswordDialog,
+              onTap: () {
+                // Check if the user signed in with Google or another provider
+                final isGoogleUser = currentUser?.providerData
+                        .any((info) => info.providerId == 'google.com') ??
+                    false;
+
+                if (isGoogleUser) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Password change is not supported for Google Sign-In users.',
+                      ),
+                    ),
+                  );
+                } else {
+                  _showChangePasswordDialog();
+                }
+              },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

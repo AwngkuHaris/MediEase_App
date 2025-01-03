@@ -228,10 +228,41 @@ class _SignInPageState extends State<SigninPage> {
                 ElevatedButton(
                   onPressed: () async {
                     try {
+                      // Perform Google Sign-In
                       final userCredential =
                           await _authService.signInWithGoogle();
+
                       if (userCredential != null) {
-                        // Handle successful sign-in
+                        // Show loading dialog after successful sign-in
+                        showDialog(
+                          context: context,
+                          barrierDismissible:
+                              false, // Prevents dismissing the dialog
+                          builder: (context) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.teal,
+                              ),
+                            );
+                          },
+                        );
+
+                        // Simulate loading delay (e.g., 2 seconds)
+                        await Future.delayed(const Duration(seconds: 1));
+
+                        // Navigate to the main page
+                        Navigator.pop(context); // Close the loading dialog
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MainPage(isSignedIn: true),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Google Sign-In failed.')),
+                        );
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -240,18 +271,20 @@ class _SignInPageState extends State<SigninPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(), // Makes the button circular
-                    padding: const EdgeInsets.all(5), // Adjust padding for size
-                    backgroundColor: Colors.white, // Background color
-                    elevation: 5, // Button elevation
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(5),
+                    backgroundColor: Colors.white,
+                    elevation: 5,
                   ),
                   child: Image.asset(
-                    'assets/images/google_logo.png', // Path to Google logo
-                    width: 35, // Adjust the size of the logo
+                    'assets/images/google_logo.png',
+                    width: 35,
                     height: 35,
                   ),
                 ),
                 const SizedBox(width: 20),
+
+                
                 ElevatedButton(
                   onPressed: () async {
                     try {
