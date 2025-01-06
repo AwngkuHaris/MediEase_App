@@ -7,7 +7,9 @@ import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_pa
 import 'package:flutter/gestures.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(int) onTabChange;
+
+  const HomePage({super.key, required this.onTabChange});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -329,7 +331,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-              const Padding(
+               Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: [
@@ -341,9 +343,14 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 17),
                     ),
                     Spacer(),
-                    Text(
-                      "See all",
-                      style: TextStyle(color: Color(0xff2A3E66), fontSize: 12),
+                    GestureDetector(
+                      child: Text(
+                        "See all",
+                        style: TextStyle(color: Color(0xff2A3E66), fontSize: 12),
+                      ),
+                      onTap: () {
+              widget.onTabChange(1); // Switch to the HealthEd tab (index 1)
+            },
                     ),
                   ],
                 ),
@@ -364,13 +371,48 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 width: MediaQuery.of(context).size.width,
-                height: 300,
+                height: 280,
                 margin: const EdgeInsets.all(
                     15.0), // Adds space around the container
                 padding: const EdgeInsets.all(
                     16.0), // Adds space inside the container
-                child: const Row(
-                  children: [],
+                child: Row(
+                  children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Image.asset(
+                          'assets/images/physicalActivity.jpeg',
+                          fit: BoxFit
+                              .cover, // Ensures the image covers the container, cropping if needed
+                          height: 240,
+                          width: 160, 
+                        )),
+                    Spacer(),
+                    Container(
+                      color: Colors.white,
+                      height: 240,
+                      width: 140,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Physical Activity Benefits",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 17),
+                          ),
+                          SizedBox(height: 15,),
+
+                          Text(
+                            "1. Strengthens heart & lungs.\n"
+                            "2. Reduce symptoms of depression and anxiety.\n"
+                            "3.Improves sleep quality.",
+                            style: TextStyle(
+                                 fontSize: 13),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(

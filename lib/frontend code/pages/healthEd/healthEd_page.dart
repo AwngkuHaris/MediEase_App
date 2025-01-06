@@ -193,7 +193,7 @@ Widget buildCustomContainer({
   required String text,
 }) {
   return Container(
-    width: 159,
+    width: 175,
     height: 190,
     decoration: BoxDecoration(
       color: Color(0xff279DA4),

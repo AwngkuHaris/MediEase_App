@@ -25,7 +25,7 @@ class _MainPageState extends State<MainPage> {
 
   // Define pages for each tab
   List<Widget> get _pages => [
-        HomePage(),
+        HomePage(onTabChange:_onItemTapped,),
         HealthEdPage(),
         AppointmentPage(onTabChange: _onItemTapped),
         ChatPage(),

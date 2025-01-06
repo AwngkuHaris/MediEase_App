@@ -330,12 +330,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                       return AlertDialog(
                                         title: const Text('Cancel Appointment'),
                                         content: const Text(
-                                            'Are you sure you want to cancel this appointment?'),
+                                            'Are you sure you want to cancel this appointment?\n\n This action will remove the appointment from your schedule and cannot be undone.'),
+                                            
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context, false),
-                                            child: const Text('No'),
+                                            child: const Text('Back',style: TextStyle(color: Colors.white),),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color(0xff00589F),
+                                            ),
                                           ),
                                           ElevatedButton(
                                             onPressed: () =>
@@ -344,7 +349,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                               backgroundColor:
                                                   const Color(0xffD9534F),
                                             ),
-                                            child: const Text('Yes'),
+                                            child: const Text('Yes',style: TextStyle(color: Colors.white),),
                                           ),
                                         ],
                                       );
