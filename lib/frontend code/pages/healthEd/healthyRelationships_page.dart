@@ -5,12 +5,28 @@ class HealthyRelationshipsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Healthy Relationships",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.teal.shade200,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bookmark, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+        title: Text(
+          'HealthEd',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xff9AD4CC),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -196,7 +212,7 @@ class HealthyRelationshipsPage extends StatelessWidget {
                       ),
                       child: Text(
                         'Take Quiz',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18,color: Colors.white),
                       ),
                     ),
                   ],

@@ -7,13 +7,28 @@ class FirstAidBasics extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: const Text(
-          "First Aid Basics",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.teal.shade200,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bookmark, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+        title: Text(
+          'HealthEd',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xff9AD4CC),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -97,11 +112,7 @@ class FirstAidBasics extends StatelessWidget {
             _buildTextContent(
                 'Performing CPR immediately can double or triple a cardiac arrest victim’s chance of survival. Always be prepared!'),
             const SizedBox(height: 16),
-            Image.asset(
-              'assets/images/helpSupport.jpeg',
-              height: 200,
-              fit: BoxFit.cover,
-            ),
+            
           ],
         ),
       ),

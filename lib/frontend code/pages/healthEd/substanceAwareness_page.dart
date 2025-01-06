@@ -5,13 +5,28 @@ class SubstanceAwarenessPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: true,
-        title: const Text(
-          "Substance Awareness",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: Colors.teal.shade200,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bookmark, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+        title: Text(
+          'HealthEd',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xff9AD4CC),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,7 +37,7 @@ class SubstanceAwarenessPage extends StatelessWidget {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.red.shade50,
+                  color: Colors.teal.shade50,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -99,37 +114,7 @@ class SubstanceAwarenessPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Show a dialog with more information
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Learn More'),
-                        content: Text(
-                            'Here you can add more information about substance awareness and prevention.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
-                            },
-                            child: Text('Close'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  ),
-                  child: Text(
-                    'Learn More',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
+              
             ],
           ),
         ),

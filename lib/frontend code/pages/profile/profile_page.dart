@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mediease_app/frontend%20code/pages/main_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/about%20app/about_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/accountSettings_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/feedback_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/helpSupport.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/medicalRecord_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
@@ -211,7 +212,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         "Send your feedback",
                         Icons.arrow_forward,
                         () {
-                          // Feedback navigation
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>  FeedbackPage()),
+                          );
                         },
                       ),
                     ],

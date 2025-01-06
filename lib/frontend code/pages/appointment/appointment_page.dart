@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/bookAppointment_page.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mediease_app/frontend%20code/pages/appointment/rescheduleAppointment_page.dart';
 
 class AppointmentPage extends StatefulWidget {
   final Function(int) onTabChange; // Accept a callback for tab change
@@ -290,7 +291,24 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 ),
                                 color: const Color(0xff2A3E66),
                                 onPressed: () {
-                                  // Reschedule logic
+                                  final Timestamp timestamp =
+                                      appointment['appointmentDateTime'];
+                                  final DateTime dateTime = timestamp
+                                      .toDate(); // Convert Timestamp to DateTime
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RescheduleAppointmentPage(
+                                        appointmentId: appointment[
+                                            'appointmentId'], // Pass appointment ID
+                                        currentDateTime:
+                                            dateTime,
+                                            onTabChange: widget.onTabChange, // Pass converted DateTime
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   "Reschedule",
@@ -351,7 +369,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                               SizedBox(
                                                 height: 100,
                                                 child: Lottie.asset(
-                                                    'assets/animations/success.json',repeat: false),
+                                                    'assets/animations/success.json',
+                                                    repeat: false),
                                               ),
                                               const Text(
                                                 'Appointment canceled successfully!',
@@ -367,7 +386,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                                 setState(
                                                     () {}); // Refresh the UI
                                               },
-                                              child: const Text('OK'),
+                                              child: const Text('Done'),
                                             ),
                                           ],
                                         );
