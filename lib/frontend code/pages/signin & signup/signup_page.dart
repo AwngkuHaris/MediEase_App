@@ -275,6 +275,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           'secondaryContact': "",
                           'notes': "",
                           'createdAt': FieldValue.serverTimestamp(),
+                          'role': "user",
                         });
 
                         scaffoldMessenger.showSnackBar(
@@ -359,6 +360,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 'secondaryContact': "",
                                 'notes': "",
                                 'createdAt': FieldValue.serverTimestamp(),
+                                'role': "user",
                               });
                             }
 

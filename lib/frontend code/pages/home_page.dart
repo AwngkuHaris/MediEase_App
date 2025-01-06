@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:mediease_app/backend%20code/services/firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mediease_app/frontend%20code/pages/Admin/admin_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mediease_app/test.dart';
 
 class HomePage extends StatefulWidget {
   final Function(int) onTabChange;
@@ -16,6 +18,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final CollectionReference announcementsRef =
+      FirebaseFirestore.instance.collection('announcements');
   final User? currentUser = FirebaseAuth.instance.currentUser;
   bool get isSignedIn => currentUser != null;
 
@@ -331,7 +335,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 10,
               ),
-               Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: [
@@ -346,11 +350,13 @@ class _HomePageState extends State<HomePage> {
                     GestureDetector(
                       child: Text(
                         "See all",
-                        style: TextStyle(color: Color(0xff2A3E66), fontSize: 12),
+                        style:
+                            TextStyle(color: Color(0xff2A3E66), fontSize: 12),
                       ),
                       onTap: () {
-              widget.onTabChange(1); // Switch to the HealthEd tab (index 1)
-            },
+                        widget.onTabChange(
+                            1); // Switch to the HealthEd tab (index 1)
+                      },
                     ),
                   ],
                 ),
@@ -385,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                           fit: BoxFit
                               .cover, // Ensures the image covers the container, cropping if needed
                           height: 240,
-                          width: 160, 
+                          width: 160,
                         )),
                     Spacer(),
                     Container(
@@ -400,14 +406,14 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 17),
                           ),
-                          SizedBox(height: 15,),
-
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text(
                             "1. Strengthens heart & lungs.\n"
                             "2. Reduce symptoms of depression and anxiety.\n"
                             "3.Improves sleep quality.",
-                            style: TextStyle(
-                                 fontSize: 13),
+                            style: TextStyle(fontSize: 13),
                           )
                         ],
                       ),
@@ -416,8 +422,125 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 20,
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 25, right: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      "Announcements",
+                      style: TextStyle(
+                          color: Color(0xff2A3E66),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17),
+                    ),
+                  ],
+                ),
+              ),
+              StreamBuilder<QuerySnapshot>(
+                stream: announcementsRef
+                    .orderBy('postedAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return const Center(
+                        child: Text("Error fetching announcements"));
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                        child: Text("No announcements available"));
+                  }
+
+                  final announcements = snapshot.data!.docs;
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: announcements.length,
+                          separatorBuilder: (context, index) => Divider(
+                            color: Colors.grey.shade400,
+                            thickness: 1,
+                          ),
+                          itemBuilder: (context, index) {
+                            final data = announcements[index].data()
+                                as Map<String, dynamic>;
+                            final String title = data['title'] ?? 'Untitled';
+                            final Timestamp timestamp =
+                                data['postedAt'] ?? Timestamp.now();
+                            final String formattedDate =
+                                DateFormat('dd MMM yyyy')
+                                    .format(timestamp.toDate());
+
+                            return ListTile(
+                              title: Text(
+                                title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              trailing: const Icon(
+                                Icons.chevron_right,
+                                color: Colors.black,
+                              ),
+                              onTap: () {
+                                // Handle announcement tap
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AdminPage(), // Navigate to AdminPage
+                      ),
+                    );
+                  },
+                  child: Text("Admin")),
+
+                  ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Test(), // Navigate to AdminPage
+                      ),
+                    );
+                  },
+                  child: Text("Test")),
             ],
           ),
         ),

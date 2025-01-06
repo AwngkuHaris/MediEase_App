@@ -34,40 +34,39 @@ Future<UserCredential?> signInWithGoogle() async {
 
   //sign in method with Facebook
   Future<UserCredential?> signInWithFacebook() async {
-    try {
-      // Trigger the sign-in flow
-      final LoginResult loginResult = await FacebookAuth.instance.login();
+  try {
+    final LoginResult loginResult = await FacebookAuth.instance.login(
+      permissions: ['email', 'public_profile'],
+    );
 
-      // Check the status of the login result
-      if (loginResult.status == LoginStatus.success) {
-        // Make sure we have an access token
-        final AccessToken? accessToken = loginResult.accessToken;
+    print('Facebook login result: ${loginResult.status}');
 
-        if (accessToken == null) {
-          throw FirebaseAuthException(
-            code: 'ERROR_FACEBOOK_LOGIN_FAILED',
-            message: 'Facebook access token is null',
-          );
-        }
+    if (loginResult.status == LoginStatus.success) {
+      final AccessToken? accessToken = loginResult.accessToken;
 
-        // Create a credential from the access token
-        final OAuthCredential facebookAuthCredential =
-            FacebookAuthProvider.credential(accessToken.tokenString);
-
-        // Once signed in, return the UserCredential
-        return await FirebaseAuth.instance
-            .signInWithCredential(facebookAuthCredential);
-      } else {
-        throw FirebaseAuthException(
-          code: 'ERROR_FACEBOOK_LOGIN_FAILED',
-          message: 'Facebook login failed with status: ${loginResult.status}',
-        );
+      if (accessToken == null) {
+        print('Access token is null');
+        throw Exception('Facebook access token is null');
       }
-    } catch (e) {
-      print('Facebook sign in error: $e');
-      rethrow;
+
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(accessToken.tokenString);
+
+      print('Attempting Firebase sign-in...');
+      return await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+    } else if (loginResult.status == LoginStatus.cancelled) {
+      print('Facebook login was cancelled by the user.');
+    } else if (loginResult.status == LoginStatus.failed) {
+      print('Facebook login failed: ${loginResult.message}');
     }
+
+    return null;
+  } catch (e) {
+    print('Error during Facebook login: $e');
+    rethrow;
   }
+}
+
 
   //sign up method with email and password
   Future<UserCredential?> signUp({
