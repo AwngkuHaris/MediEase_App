@@ -18,6 +18,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String? selectedTimeSlot;
+  final TextEditingController _reasonController = TextEditingController();
 
   final List<String> timeSlots = [
     '8 AM',
@@ -31,127 +32,139 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   ];
 
   // Function to book an appointment
-Future<void> _bookAppointment(BuildContext context) async {
-  if (_selectedDay == null || selectedTimeSlot == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please select a date and a time slot')),
-    );
-    return;
-  }
-
-  try {
-    // Convert selectedTimeSlot (e.g., '8 AM') into a 24-hour time
-    final timeFormat = DateFormat('h a'); // Parse '8 AM', '12 PM', etc.
-    DateTime time = timeFormat.parse(selectedTimeSlot!);
-
-    // Combine the selectedDay and time into a single DateTime object
-    DateTime combinedDateTime = DateTime(
-      _selectedDay!.year,
-      _selectedDay!.month,
-      _selectedDay!.day,
-      time.hour,
-      time.minute,
-    );
-
-    // Format the combinedDateTime
-    String formattedDate = DateFormat('EEEE, MMM d, yyyy').format(combinedDateTime);
-    String formattedTime = DateFormat('h:mm a').format(combinedDateTime);
-
-    // Get the current user
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
+  Future<void> _bookAppointment(BuildContext context) async {
+    if (_selectedDay == null || selectedTimeSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to book an appointment')),
+        const SnackBar(content: Text('Please select a date and a time slot')),
       );
       return;
     }
 
-    // Save combinedDateTime to Firestore
-    String appointmentId =
-        FirebaseFirestore.instance.collection('appointments').doc().id;
+    try {
+      // Convert selectedTimeSlot into a DateTime object
+      final timeFormat = DateFormat('h a'); // Parse '8 AM', '12 PM', etc.
+      DateTime time = timeFormat.parse(selectedTimeSlot!);
 
-    await FirebaseFirestore.instance
-        .collection('appointments')
-        .doc(appointmentId)
-        .set({
-      'appointmentId': appointmentId,
-      'userId': currentUser.uid,
-      'userName': currentUser.displayName ?? 'Unknown',
-      'userEmail': currentUser.email ?? 'Unknown',
-      'appointmentDateTime': combinedDateTime,
-      'createdAt': FieldValue.serverTimestamp(),
-      'status': 'scheduled',
-      'title': 'Medical Check-up',
-    });
+      // Combine the selectedDay and time
+      DateTime combinedDateTime = DateTime(
+        _selectedDay!.year,
+        _selectedDay!.month,
+        _selectedDay!.day,
+        time.hour,
+        time.minute,
+      );
 
-    // Show success dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 100,
-                child: Lottie.asset(
-                  'assets/animations/success.json',
-                  repeat: false,
+      // Get the current user
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in to book an appointment')),
+        );
+        return;
+      }
+
+      // Generate unique appointment ID
+      String appointmentId =
+          FirebaseFirestore.instance.collection('appointments').doc().id;
+
+      // Save the appointment to the `appointments` collection
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(appointmentId)
+          .set({
+        'appointmentId': appointmentId,
+        'userId': currentUser.uid,
+        'userName': currentUser.displayName ?? 'Unknown',
+        'userEmail': currentUser.email ?? 'Unknown',
+        'appointmentDateTime': combinedDateTime,
+        'reasonOfAppointment': _reasonController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'scheduled',
+        'title': 'Medical Check-up',
+      });
+
+      // Add a notification to the `notifications` subcollection for the user
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('notifications')
+          .add({
+        'message': 'Your appointment has been successfully booked.',
+        'appointmentId': appointmentId,
+        'appointmentDateTime': combinedDateTime,
+        'Place': 'Pusat Kesihatan Prima, UNIMAS',
+        'createdAt': FieldValue.serverTimestamp(),
+        'type': 'appointment_booking',
+        'isRead': false, // Mark as unread initially
+      });
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 100,
+                  child: Lottie.asset(
+                    'assets/animations/success.json',
+                    repeat: false,
+                  ),
                 ),
-              ),
-              const Text(
-                'Appointment booked successfully!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Your appointment is as below:',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Date: $formattedDate',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                'Time: $formattedTime',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                'Place: Pusat Kesihatan Prima, UNIMAS',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                const Text(
+                  'Appointment booked successfully!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Your appointment details:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Date: ${DateFormat('EEEE, MMM d, yyyy').format(combinedDateTime)}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Time: ${DateFormat('h:mm a').format(combinedDateTime)}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Place: Pusat Kesihatan Prima, UNIMAS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close dialog
+                  widget.onTabChange(2); // Switch to Appointments tab
+                  Navigator.pop(context); // Close booking page
+                },
+                child: const Text('Done'),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog box
-                widget.onTabChange(2); // Switch to the "Appointments" tab
-                Navigator.pop(context); // Close the booking screen
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    print('Error: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to book appointment: $e')),
-    );
+          );
+        },
+      );
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to book appointment: $e')),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -312,15 +325,16 @@ Future<void> _bookAppointment(BuildContext context) async {
                 ),
               ),
 
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15),
                 child: TextField(
+                  controller: _reasonController,
                   decoration: InputDecoration(
-                    hintText: "Reason of appointment", // Placeholder text
+                    hintText: "Reason of appointment",
                     hintStyle: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black), // Style of placeholder text
+                        color: Colors.black),
                   ),
                 ),
               ),

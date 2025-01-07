@@ -113,10 +113,14 @@ class _FeedbackManagerState extends State<FeedbackManager> {
                               child: ListTile(
                                 leading: CircleAvatar(
                                   radius: 25,
-                                  backgroundImage: profilePicture != null
+                                  backgroundImage: profilePicture != null &&
+                                          profilePicture.isNotEmpty
                                       ? NetworkImage(profilePicture)
-                                      : null,
-                                  child: profilePicture == null
+                                      : AssetImage(
+                                              'assets/images/default_profile.JPG')
+                                          as ImageProvider,
+                                  child: profilePicture == null ||
+                                          profilePicture.isEmpty
                                       ? Text(
                                           userName[
                                               0], // First letter of the name

@@ -54,15 +54,16 @@ class _UserListPageState extends State<UserListPage> {
                       child: Row(
                         children: const [
                           Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: Text(
                               "Name",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                           ),
+                          SizedBox(width: 10,),
                           Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: Text(
                               "Email",
                               style: TextStyle(
@@ -70,7 +71,7 @@ class _UserListPageState extends State<UserListPage> {
                             ),
                           ),
                           Expanded(
-                            flex: 1,
+                            flex: 2,
                             child: Text(
                               "Actions",
                               style: TextStyle(
@@ -103,25 +104,28 @@ class _UserListPageState extends State<UserListPage> {
                               children: [
                                 // Name
                                 Expanded(
-                                  flex: 3,
+                                  flex: 2,
                                   child: Text(
                                     name,
                                     style: const TextStyle(fontSize: 14),
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: TextOverflow.visible,
+                                    softWrap: true,
                                   ),
                                 ),
+                                SizedBox(width: 10,),
                                 // Email
                                 Expanded(
-                                  flex: 3,
+                                  flex: 2,
                                   child: Text(
                                     email,
                                     style: const TextStyle(fontSize: 14),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                SizedBox(width: 10,),
                                 // View More Button
                                 Expanded(
-                                  flex: 1,
+                                  flex: 2,
                                   child: ElevatedButton(
                                     onPressed: () {
                                       Navigator.push(
@@ -138,7 +142,7 @@ class _UserListPageState extends State<UserListPage> {
                                     ),
                                     child: const Text(
                                       "View",
-                                      style: TextStyle(fontSize: 12),
+                                      style: TextStyle(fontSize: 12,color: Colors.white),
                                     ),
                                   ),
                                 ),

@@ -3,6 +3,7 @@ import 'package:mediease_app/frontend%20code/pages/healthEd/HealthEd_page.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
 import 'package:mediease_app/frontend%20code/pages/chat/chat_page.dart';
 import 'package:mediease_app/frontend%20code/pages/home_page.dart';
+import 'package:mediease_app/frontend%20code/pages/notifications_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/profile_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -43,7 +44,13 @@ class _MainPageState extends State<MainPage> {
         ),
         centerTitle: true, // Center the image in the AppBar
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications))
+          IconButton(onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          NotificationsPage(),
+                    ),
+                  );}, icon: const Icon(Icons.notifications))
         ],
         backgroundColor: const Color(0xff9AD4CC),
       ),

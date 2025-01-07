@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lottie/lottie.dart';
 
 class PasswordPrivacyPage extends StatefulWidget {
   const PasswordPrivacyPage({super.key});
@@ -201,12 +202,39 @@ class _PasswordPrivacyPageState extends State<PasswordPrivacyPage> {
                     false;
 
                 if (isGoogleUser) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Password change is not supported for Google Sign-In users.',
-                      ),
-                    ),
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: 100,
+                              child: Lottie.asset(
+                                'assets/animations/fail.json',
+                                repeat: false,
+                              ),
+                            ),
+                            const Text(
+                              'Password change is not supported for Google Sign-In users.',
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog box
+                              Navigator.pop(
+                                  context); // Close the booking screen
+                            },
+                            child: const Text('Done'),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 } else {
                   _showChangePasswordDialog();

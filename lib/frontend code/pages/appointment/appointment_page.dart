@@ -94,15 +94,28 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return appointments;
   }
 
-  Future<void> deleteAppointment(String appointmentId) async {
+  Future<void> deleteAppointment(String appointmentId, String userId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('appointments')
-          .doc(appointmentId)
-          .delete();
-      print('Appointment deleted successfully');
+      final firestore = FirebaseFirestore.instance;
+
+      // Delete the appointment
+      await firestore.collection('appointments').doc(appointmentId).delete();
+
+      // Add a notification to the user's notifications subcollection
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'title': 'Appointment Canceled',
+        'message': 'Your appointment with ID $appointmentId has been canceled.',
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false, // Mark notification as unread
+      });
+
+      print('Appointment deleted and notification added successfully');
     } catch (e) {
-      print('Error deleting appointment: $e');
+      print('Error deleting appointment or adding notification: $e');
     }
   }
 
@@ -303,9 +316,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                           RescheduleAppointmentPage(
                                         appointmentId: appointment[
                                             'appointmentId'], // Pass appointment ID
-                                        currentDateTime:
-                                            dateTime,
-                                            onTabChange: widget.onTabChange, // Pass converted DateTime
+                                        currentDateTime: dateTime,
+                                        onTabChange: widget
+                                            .onTabChange, // Pass converted DateTime
                                       ),
                                     ),
                                   );
@@ -331,12 +344,15 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                         title: const Text('Cancel Appointment'),
                                         content: const Text(
                                             'Are you sure you want to cancel this appointment?\n\n This action will remove the appointment from your schedule and cannot be undone.'),
-                                            
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context, false),
-                                            child: const Text('Back',style: TextStyle(color: Colors.white),),
+                                            child: const Text(
+                                              'Back',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
                                                   const Color(0xff00589F),
@@ -349,7 +365,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                               backgroundColor:
                                                   const Color(0xffD9534F),
                                             ),
-                                            child: const Text('Yes',style: TextStyle(color: Colors.white),),
+                                            child: const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                           ),
                                         ],
                                       );
@@ -360,7 +380,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   if (confirm == true) {
                                     final String appointmentId =
                                         appointment['appointmentId'];
-                                    await deleteAppointment(appointmentId);
+                                    final String userId = appointment[
+                                        'userId']; // Ensure userId is part of the appointment data
+
+                                    await deleteAppointment(
+                                        appointmentId, userId);
 
                                     // Show a success dialog with Lottie animation
                                     showDialog(
@@ -507,7 +531,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     ),
                   );
                 },
-              )
+              ),
+
+              SizedBox(
+                height: 50,
+              ),
             ],
           ),
         ),

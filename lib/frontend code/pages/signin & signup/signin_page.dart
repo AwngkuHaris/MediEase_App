@@ -5,6 +5,7 @@ import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:mediease_app/frontend%20code/pages/Admin/admin_page.dart';
 import 'package:mediease_app/frontend%20code/pages/main_page.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/admin_login_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signup_page.dart';
 
 class SigninPage extends StatefulWidget {
@@ -90,71 +91,98 @@ class _SignInPageState extends State<SigninPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        // Background Image
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/login.jpeg',
-            fit: BoxFit.cover, // Scale the image to cover the screen
-          ),
-        ),
-        // Semi-transparent overlay
-        Positioned.fill(
-          child: Container(
-            color: Colors.white.withAlpha(170),
-          ),
-        ),
-        // Main content
-        SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/login.jpeg',
+              fit: BoxFit.cover, // Scale the image to cover the screen
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 30),
-                  Image.asset(
-                    'assets/images/mediease_logo.png',
-                    height: 70,
-                  ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 50),
-                  _buildTextFieldSection("Email Address", _emailController, false, "Enter your email address"),
-                  const SizedBox(height: 16),
-                  _buildTextFieldSection("Password", _passwordController, true,"Enter your password"),
-                  const SizedBox(height: 25),
-                  _buildLoginButton(),
-                  const SizedBox(height: 20),
-                  const Text("or login with", style: TextStyle(fontSize: 12)),
-                  const SizedBox(height: 16),
-                  _buildSocialLoginButtons(),
-                  const SizedBox(height: 110),
-                  _buildAgreementText(),
-                  const SizedBox(height: 10),
-                  _buildSignUpFooter(),
-                ],
+          ),
+          // Semi-transparent overlay
+          Positioned.fill(
+            child: Container(
+              color: Colors.white.withAlpha(170),
+            ),
+          ),
+          // Main content
+          SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 30),
+                    Image.asset(
+                      'assets/images/mediease_logo.png',
+                      height: 70,
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      "Login",
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 50),
+                    _buildTextFieldSection("Email Address", _emailController,
+                        false, "Enter your email address"),
+                    const SizedBox(height: 16),
+                    _buildTextFieldSection("Password", _passwordController,
+                        true, "Enter your password"),
+                    const SizedBox(height: 25),
+                    _buildLoginButton(),
+                    const SizedBox(height: 20),
+                    const Text("or login with", style: TextStyle(fontSize: 12)),
+                    const SizedBox(height: 16),
+                    _buildSocialLoginButtons(),
+                    const SizedBox(
+                      height: 45,
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Or login as admin ',
+                            style: TextStyle(color: Colors.black, fontSize: 12),
+                          ),
+                          TextSpan(
+                            text: 'here ',
+                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AdminLoginPage()),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 90),
+                    _buildAgreementText(),
+                    const SizedBox(height: 10),
+                    _buildSignUpFooter(),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-
-  Widget _buildTextFieldSection(
-      String label, TextEditingController controller, bool isPassword, String hint) {
+  Widget _buildTextFieldSection(String label, TextEditingController controller,
+      bool isPassword, String hint) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

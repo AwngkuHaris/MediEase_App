@@ -129,6 +129,19 @@ class _FeedbackPageState extends State<FeedbackPage> {
       // Add feedback to Firestore
       await feedbackDocRef.set(feedbackData);
 
+      // Add a notification for feedback submission
+      final notificationData = {
+        "message": "Your feedback has been submitted successfully.",
+        "createdAt": FieldValue.serverTimestamp(),
+        "isRead": false,
+      };
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add(notificationData);
+
       // Show success dialog
       showDialog(
         context: context,
@@ -146,7 +159,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   ),
                 ),
                 const Text(
-                  'Feeback submitted successfully!',
+                  'Feedback submitted successfully!',
                   textAlign: TextAlign.center,
                 ),
               ],

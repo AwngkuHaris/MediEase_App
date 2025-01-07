@@ -107,19 +107,23 @@ class FeedbackDetailsPage extends StatelessWidget {
                           Row(
                             children: [
                               CircleAvatar(
-                                radius: 30,
-                                backgroundImage: profilePicture != null
-                                    ? NetworkImage(profilePicture)
-                                    : null,
-                                child: profilePicture == null
-                                    ? Text(
-                                        userName[0],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 24),
-                                      )
-                                    : null,
-                              ),
+                                  radius: 25,
+                                  backgroundImage: profilePicture != null &&
+                                          profilePicture.isNotEmpty
+                                      ? NetworkImage(profilePicture)
+                                      : AssetImage(
+                                              'assets/images/default_profile.JPG')
+                                          as ImageProvider,
+                                  child: profilePicture == null ||
+                                          profilePicture.isEmpty
+                                      ? Text(
+                                          userName[
+                                              0], // First letter of the name
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : null,
+                                ),
                               const SizedBox(width: 16),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
