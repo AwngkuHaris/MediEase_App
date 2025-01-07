@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:mediease_app/frontend%20code/pages/Admin/addAnnouncement_page.dart';
+import 'package:mediease_app/frontend%20code/pages/Admin/editAnnouncement_page.dart';
 
 class AnnouncementsPage extends StatefulWidget {
   @override
@@ -15,12 +17,10 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF9AD4CC), // Background color
-      appBar: AppBar(
-        title: const Text("Announcements"),
-        backgroundColor: const Color(0xFF05808C),
-      ),
+
       body: StreamBuilder<QuerySnapshot>(
-        stream: announcementsRef.snapshots(),
+        stream:
+            announcementsRef.orderBy('postedAt', descending: true).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -56,6 +56,23 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                           "Announcement List",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddAnnouncementPage(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xff5CA4C7),
+                          ),
+                          child: const Text(
+                            "+ Add Announcement",
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                          ),
                         ),
                       ],
                     ),
@@ -155,7 +172,16 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                                     // Edit Button
                                     ElevatedButton(
                                       onPressed: () {
-                                        // Edit functionality
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditAnnouncementPage(
+                                                announcementId: announcements[
+                                                        index]
+                                                    .id, // Pass the announcement ID)
+                                              ),
+                                            ));
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green,

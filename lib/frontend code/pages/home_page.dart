@@ -4,9 +4,9 @@ import 'package:mediease_app/backend%20code/services/firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mediease_app/frontend%20code/pages/Admin/admin_page.dart';
+import 'package:mediease_app/frontend%20code/pages/announcementDetails_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 import 'package:flutter/gestures.dart';
-import 'package:mediease_app/test.dart';
 
 class HomePage extends StatefulWidget {
   final Function(int) onTabChange;
@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: [
@@ -151,9 +151,16 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 17),
                     ),
                     Spacer(),
-                    Text(
-                      "See all",
-                      style: TextStyle(color: Color(0xff2A3E66), fontSize: 12),
+                    GestureDetector(
+                      child: Text(
+                        "See all",
+                        style:
+                            TextStyle(color: Color(0xff2A3E66), fontSize: 12),
+                      ),
+                      onTap: () {
+                        widget.onTabChange(
+                            2); // Switch to the HealthEd tab (index 1)
+                      },
                     ),
                   ],
                 ),
@@ -508,7 +515,15 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.black,
                               ),
                               onTap: () {
-                                // Handle announcement tap
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          AnnouncementDetailsPage(
+                                            announcementId:
+                                                announcements[index].id,
+                                          )),
+                                );
                               },
                             );
                           },
@@ -518,29 +533,9 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AdminPage(), // Navigate to AdminPage
-                      ),
-                    );
-                  },
-                  child: Text("Admin")),
-
-                  ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Test(), // Navigate to AdminPage
-                      ),
-                    );
-                  },
-                  child: Text("Test")),
+              SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),
