@@ -285,32 +285,7 @@ class _SignInPageState extends State<SigninPage> {
             height: 35,
           ),
         ),
-        const SizedBox(width: 20),
-        ElevatedButton(
-          onPressed: () async {
-            try {
-              final userCredential = await _authService.signInWithFacebook();
-              if (userCredential != null) {
-                // Handle Facebook sign-in success
-              }
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Facebook Sign-In failed: $e')),
-              );
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(5),
-            backgroundColor: Colors.white,
-            elevation: 5,
-          ),
-          child: Image.asset(
-            'assets/images/facebook_logo.png',
-            width: 35,
-            height: 35,
-          ),
-        ),
+        
       ],
     );
   }

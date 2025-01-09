@@ -401,27 +401,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: 35,
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle the sign-in logic here
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape:
-                            const CircleBorder(), // Makes the button circular
-                        padding:
-                            const EdgeInsets.all(5), // Adjust padding for size
-                        backgroundColor: Colors.white, // Background color
-                        elevation: 5, // Button elevation
-                      ),
-                      child: Image.asset(
-                        'assets/images/facebook_logo.png', // Path to Facebook logo
-                        width: 35, // Adjust the size of the logo
-                        height: 35,
-                      ),
-                    ),
+                    
                   ],
                 ),
 

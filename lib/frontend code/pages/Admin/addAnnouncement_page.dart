@@ -30,11 +30,34 @@ class _AddAnnouncementPageState extends State<AddAnnouncementPage> {
     });
 
     try {
-      await FirebaseFirestore.instance.collection('announcements').add({
+      // Add the announcement to the 'announcements' collection
+      final announcementRef =
+          await FirebaseFirestore.instance.collection('announcements').add({
         'title': title,
         'content': content,
         'postedAt': FieldValue.serverTimestamp(),
       });
+
+      final String announcementId = announcementRef.id;
+
+      // Fetch all users
+      final usersSnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+
+      for (var userDoc in usersSnapshot.docs) {
+        // Add a notification to each user's 'notifications' subcollection
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userDoc.id)
+            .collection('notifications')
+            .add({
+          'message': 'New Announcement: $title',
+          'announcementId': announcementId,
+          'content': content,
+          'createdAt': FieldValue.serverTimestamp(),
+          'isRead': false,
+        });
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -105,8 +128,7 @@ class _AddAnnouncementPageState extends State<AddAnnouncementPage> {
                 ),
                 child: _isSubmitting
                     ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       )
                     : const Text(
                         "Submit Announcement",

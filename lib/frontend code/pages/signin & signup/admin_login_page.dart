@@ -5,6 +5,7 @@ import 'package:mediease_app/backend%20code/services/auth_service.dart';
 import 'package:mediease_app/frontend%20code/pages/Admin/admin_page.dart';
 import 'package:mediease_app/frontend%20code/pages/main_page.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signin_page.dart';
 import 'package:mediease_app/frontend%20code/pages/signin%20&%20signup/signup_page.dart';
 
 class AdminLoginPage extends StatefulWidget {
@@ -90,71 +91,86 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Stack(
-      children: [
-        // Background Image
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/login.jpeg',
-            fit: BoxFit.cover, // Scale the image to cover the screen
-          ),
-        ),
-        // Semi-transparent overlay
-        Positioned.fill(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white.withAlpha(170),
-          ),
-        ),
-        // Main content
-        SingleChildScrollView(
-          
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-              minWidth: MediaQuery.of(context).size.width,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/login.jpeg',
+              fit: BoxFit.cover, // Scale the image to cover the screen
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 30),
-                  Image.asset(
-                    'assets/images/mediease_logo.png',
-                    height: 70,
-                  ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    "Admin Login",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 50),
-                  _buildTextFieldSection("Email Address", _emailController, false, "Enter admin email address"),
-                  const SizedBox(height: 16),
-                  _buildTextFieldSection("Password", _passwordController, true,"Enter admin password"),
-                  const SizedBox(height: 40),
-                  _buildLoginButton(),
-                  const SizedBox(height: 20),
-                  
-                 
-                
-                ],
+          ),
+          // Semi-transparent overlay
+          Positioned.fill(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              color: Colors.white.withAlpha(170),
+            ),
+          ),
+          // Main content
+          SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+                minWidth: MediaQuery.of(context).size.width,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Row(
+                      children: [
+                        GestureDetector(
+                            child: Icon(Icons.arrow_back),
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainPage(isSignedIn: false),
+                                ),
+                              );
+                            })
+                      ],
+                    ),
+                    const SizedBox(height: 60),
+                    Image.asset(
+                      'assets/images/mediease_logo.png',
+                      height: 70,
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      "Admin Login",
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 50),
+                    _buildTextFieldSection("Email Address", _emailController,
+                        false, "Enter admin email address"),
+                    const SizedBox(height: 16),
+                    _buildTextFieldSection("Password", _passwordController,
+                        true, "Enter admin password"),
+                    const SizedBox(height: 40),
+                    _buildLoginButton(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-
-  Widget _buildTextFieldSection(
-      String label, TextEditingController controller, bool isPassword, String hint) {
+  Widget _buildTextFieldSection(String label, TextEditingController controller,
+      bool isPassword, String hint) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,7 +199,6 @@ Widget build(BuildContext context) {
             ],
           ),
           child: TextField(
-            
             controller: controller,
             obscureText: isPassword,
             decoration: InputDecoration(
@@ -223,8 +238,6 @@ Widget build(BuildContext context) {
       onPressed: _isLoading ? null : _handleAuth,
     );
   }
-
- 
 
   Widget _buildAgreementText() {
     return SizedBox(
