@@ -72,3 +72,4 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.medieaseApp',
   );
 }
+//migrate firebase nosql to postgresql
