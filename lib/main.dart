@@ -39,11 +39,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const AuthStateListener(),
-
-      routes: {
-        '/signin': (context) => SigninPage(), // Define the SigninPage route
-      }
+      // home: const AuthStateListener(), -- Original Line
+      home: const Scaffold(
+        body: Center(
+          child: Text(
+            'Reminder: Please confirm your appointment before the scheduled time.',
+          ),
+        ),
+      ),
     );
   }
 }
