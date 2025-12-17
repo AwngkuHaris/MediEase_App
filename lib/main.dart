@@ -24,7 +24,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const AuthStateListener(),
+      // home: const AuthStateListener(), -- Original Line
+      home: const Scaffold(
+        body: Center(
+          child: Text(
+            'Reminder: Please confirm your appointment before the scheduled time.',
+          ),
+        ),
+      ),
     );
   }
 }
