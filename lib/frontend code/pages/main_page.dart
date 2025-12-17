@@ -3,11 +3,12 @@ import 'package:mediease_app/frontend%20code/pages/healthEd/HealthEd_page.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
 import 'package:mediease_app/frontend%20code/pages/chat/chat_page.dart';
 import 'package:mediease_app/frontend%20code/pages/home_page.dart';
+import 'package:mediease_app/frontend%20code/pages/notifications_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   final bool isSignedIn;
-  const MainPage({Key? key, required this.isSignedIn}) : super(key: key);
+  const MainPage({super.key, required this.isSignedIn});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -16,14 +17,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0; // Track the selected tab
 
-  // Define pages for each tab
-  final List<Widget> _pages = [
-    HomePage(),
-    HealthEdPage(),
-    AppointmentPage(),
-    ChatPage(),
-    ProfilePage(),
-  ];
   // Update the selected tab index
   void _onItemTapped(int index) {
     setState(() {
@@ -31,30 +24,51 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  // Define pages for each tab
+  List<Widget> get _pages => [
+        HomePage(onTabChange:_onItemTapped,),
+        HealthEdPage(),
+        AppointmentPage(onTabChange: _onItemTapped),
+        ChatPage(),
+        ProfilePage(),
+      ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Removes the back button
+        title: Image.asset(
+          'assets/images/mediease_logo.png', // Replace with your image asset path
+          height: 50,
+        ),
+        centerTitle: true, // Center the image in the AppBar
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications))
+          IconButton(onPressed: () {Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          NotificationsPage(),
+                    ),
+                  );}, icon: const Icon(Icons.notifications))
         ],
-        backgroundColor: Color(0xff9AD4CC),
+        backgroundColor: const Color(0xff9AD4CC),
       ),
       bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(16), topRight: Radius.circular(16)),
         child: BottomNavigationBar(
             currentIndex: _selectedIndex, // Highlight the selected tab
             onTap: _onItemTapped, // Handle tap events
             selectedFontSize: 12,
-            selectedIconTheme: IconThemeData(size: 25),
+            selectedIconTheme: const IconThemeData(size: 25),
             unselectedFontSize: 10,
-            unselectedIconTheme: IconThemeData(size: 18),
+            unselectedIconTheme: const IconThemeData(size: 18),
             selectedItemColor: Colors.black,
             unselectedItemColor: Colors.black,
             type: BottomNavigationBarType
                 .fixed, // Ensure all icons remain visible
-            items: [
+            items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
                 label: "Home",

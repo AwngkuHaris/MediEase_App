@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/deleteAccount_page.dart';
+import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/passwordPrivacy_page.dart';
 import 'package:mediease_app/frontend%20code/pages/profile/account%20settings/profileManagement_page.dart';
 
 class AccountsettingsPage extends StatelessWidget {
@@ -10,12 +12,12 @@ class AccountsettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Color(0xff9AD4CC),
-        title: Text("Account Settings"),
-        titleTextStyle: TextStyle(
+        backgroundColor: const Color(0xff9AD4CC),
+        title: const Text("Account Settings"),
+        titleTextStyle: const TextStyle(
             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
       ),
       body: Center(
@@ -33,16 +35,17 @@ class AccountsettingsPage extends StatelessWidget {
               child: Row(
                 children: [
                   CircleAvatar(
-                    backgroundImage: currentUser!.photoURL != null
-                        ? NetworkImage(currentUser!.photoURL!)
-                        : null,
-                    child: currentUser!.photoURL == null
-                        ? Text(currentUser!.displayName?[0] ?? '')
-                        : null,
-                    radius: 40,
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
+                            backgroundImage: currentUser!.photoURL != null
+                                ? NetworkImage(currentUser!.photoURL!)
+                                : null,
+                            radius: 40,
+                            child: currentUser!.photoURL == null
+                                ? Text(currentUser!.displayName?[0] ?? '')
+                                : null,
+                          ),
+                  
+                  const SizedBox(width: 20),
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +80,7 @@ class AccountsettingsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProfilemanagementPage(),
+                        builder: (context) => const ProfilemanagementPage(),
                       ),
                     );
                     // Navigate to AccountSettingsPage
@@ -91,7 +94,7 @@ class AccountsettingsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AccountsettingsPage(),
+                        builder: (context) => PasswordPrivacyPage(),
                       ),
                     );
                   },
@@ -101,7 +104,13 @@ class AccountsettingsPage extends StatelessWidget {
                   "",
                   Icons.arrow_forward,
                   () {
-                    // Feedback navigation
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DeleteaccountPage(),
+                      ),
+                    );
+                    
                   },
                 ),
                 
@@ -135,10 +144,10 @@ class AccountsettingsPage extends StatelessWidget {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: subtitle.isNotEmpty
-          ? Text(subtitle, style: TextStyle(fontSize: 10))
+          ? Text(subtitle, style: const TextStyle(fontSize: 10))
           : null,
       trailing: GestureDetector(
         onTap: onTap,

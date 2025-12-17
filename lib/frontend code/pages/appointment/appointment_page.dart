@@ -3,24 +3,32 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mediease_app/frontend%20code/pages/appointment/bookAppointment_page.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
+import 'package:mediease_app/frontend%20code/pages/appointment/rescheduleAppointment_page.dart';
 
 class AppointmentPage extends StatefulWidget {
-  const AppointmentPage({super.key});
+  final Function(int) onTabChange; // Accept a callback for tab change
+
+  const AppointmentPage({super.key, required this.onTabChange});
 
   @override
   State<AppointmentPage> createState() => _AppointmentPageState();
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  Future<Map<String, dynamic>?> fetchClosestAppointment() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
+  // Class-level getter for current user
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 
+  // Check if user is signed in
+  bool get isSignedIn => currentUser != null;
+
+  Future<Map<String, dynamic>?> fetchClosestAppointment() async {
     if (currentUser == null) return null;
 
     // Query appointments sorted by appointmentDateTime
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('appointments')
-        .where('userId', isEqualTo: currentUser.uid)
+        .where('userId', isEqualTo: currentUser!.uid)
         .where('appointmentDateTime',
             isGreaterThan: DateTime.now()) // Future appointments
         .orderBy('appointmentDateTime')
@@ -86,8 +94,71 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return appointments;
   }
 
+  Future<void> deleteAppointment(String appointmentId, String userId) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+
+      // Delete the appointment
+      await firestore.collection('appointments').doc(appointmentId).delete();
+
+      // Add a notification to the user's notifications subcollection
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'title': 'Appointment Canceled',
+        'message': 'Your appointment with ID $appointmentId has been canceled.',
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false, // Mark notification as unread
+      });
+
+      print('Appointment deleted and notification added successfully');
+    } catch (e) {
+      print('Error deleting appointment or adding notification: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xff9AD4CC),
+      body: SafeArea(
+        child: isSignedIn ? _buildSignedInUI() : _buildUnregisteredUserUI(),
+      ),
+    );
+  }
+
+  Widget _buildSection(BuildContext context, List<Widget> tiles) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(5.0),
+      child: Column(children: tiles),
+    );
+  }
+
+  Widget _buildListTile(
+    String title,
+    String subtitle,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: subtitle.isNotEmpty
+          ? Text(subtitle, style: const TextStyle(fontSize: 12))
+          : null,
+    );
+  }
+
+  Widget _buildSignedInUI() {
     return Scaffold(
       backgroundColor: const Color(0xff9AD4CC),
       body: SafeArea(
@@ -200,7 +271,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   ),
                                 ],
                               ),
-                              Text("|"),
+                              const Text("|"),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -231,9 +302,26 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                color: Color(0xff2A3E66),
+                                color: const Color(0xff2A3E66),
                                 onPressed: () {
-                                  // Reschedule logic
+                                  final Timestamp timestamp =
+                                      appointment['appointmentDateTime'];
+                                  final DateTime dateTime = timestamp
+                                      .toDate(); // Convert Timestamp to DateTime
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RescheduleAppointmentPage(
+                                        appointmentId: appointment[
+                                            'appointmentId'], // Pass appointment ID
+                                        currentDateTime: dateTime,
+                                        onTabChange: widget
+                                            .onTabChange, // Pass converted DateTime
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   "Reschedule",
@@ -246,9 +334,94 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                color: Color(0xffD9534F),
-                                onPressed: () {
-                                  // Cancel appointment logic
+                                color: const Color(0xffD9534F),
+                                onPressed: () async {
+                                  // Show a confirmation dialog
+                                  final bool? confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Cancel Appointment'),
+                                        content: const Text(
+                                            'Are you sure you want to cancel this appointment?\n\n This action will remove the appointment from your schedule and cannot be undone.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text(
+                                              'Back',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color(0xff00589F),
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, true),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color(0xffD9534F),
+                                            ),
+                                            child: const Text(
+                                              'Yes',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  // If the user confirms, proceed with cancellation
+                                  if (confirm == true) {
+                                    final String appointmentId =
+                                        appointment['appointmentId'];
+                                    final String userId = appointment[
+                                        'userId']; // Ensure userId is part of the appointment data
+
+                                    await deleteAppointment(
+                                        appointmentId, userId);
+
+                                    // Show a success dialog with Lottie animation
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                height: 100,
+                                                child: Lottie.asset(
+                                                    'assets/animations/success.json',
+                                                    repeat: false),
+                                              ),
+                                              const Text(
+                                                'Appointment canceled successfully!',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(
+                                                    context); // Close success dialog
+                                                setState(
+                                                    () {}); // Refresh the UI
+                                              },
+                                              child: const Text('Done'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                                 child: const Text(
                                   "Cancel Appointment",
@@ -340,8 +513,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Color(0xff00589F),
-                child: Text(
+                color: const Color(0xff00589F),
+                child: const Text(
                   "Book New Appointment",
                   style: TextStyle(
                     fontSize: 16,
@@ -353,11 +526,16 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BookappointmentPage(),
+                      builder: (context) =>
+                          BookappointmentPage(onTabChange: widget.onTabChange),
                     ),
                   );
                 },
-              )
+              ),
+
+              SizedBox(
+                height: 50,
+              ),
             ],
           ),
         ),
@@ -365,32 +543,42 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 
-  Widget _buildSection(BuildContext context, List<Widget> tiles) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+  Widget _buildUnregisteredUserUI() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'You are not logged in.',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the sign-in page
+                Navigator.pushNamed(
+                    context, '/signin'); // Replace with your sign-in route
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff00589F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: const Text(
+                'Log In to Book an Appointment',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       ),
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(5.0),
-      child: Column(children: tiles),
-    );
-  }
-
-  Widget _buildListTile(
-    String title,
-    String subtitle,
-    VoidCallback onTap,
-  ) {
-    return ListTile(
-      title: Text(
-        title,
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: subtitle.isNotEmpty
-          ? Text(subtitle, style: TextStyle(fontSize: 12))
-          : null,
     );
   }
 }

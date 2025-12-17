@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,12 +28,34 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>mediease_app</title>
   <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
   <script src="flutter_bootstrap.js" async></script>
+  <!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+
+<!-- Firebase Authentication -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+
+<!-- Add any other Firebase services you use -->
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyANjDYCQMFriTVmnl-uhJ68WGPZArW9PO4",
+      authDomain: "medieaseapp.firebaseapp.com",
+      projectId: "medieaseapp",
+      storageBucket: "medieaseapp.firebasestorage.app",
+      messagingSenderId: "718442296538",
+      appId: "1:718442296538:web:4bd970a00cacc569a6e1e3"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </body>
+
 </html>

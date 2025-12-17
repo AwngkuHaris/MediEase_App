@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 
 class ChatPage extends StatefulWidget {
-  ChatPage({super.key});
+  const ChatPage({super.key});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -15,55 +15,18 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> messages = [];
   String currentContext = "main_menu"; // Tracks the current context
 
-  // Initial Quick Replies
-  List<QuickReply> initialQuickReplies = [
-    QuickReply(
-      title: "1",
-      value: "appointment_issues",
-    ),
-    QuickReply(
-      title: "2",
-      value: "health_education",
-    ),
-    QuickReply(
-      title: "3",
-      value: "technical_support",
-    ),
-    QuickReply(
-      title: "4",
-      value: "other_questions",
-    ),
-  ];
-
-  // Follow-Up Quick Replies for Appointment Issues
-  List<QuickReply> appointmentQuickReplies = [
-    QuickReply(
-      title: "1",
-      value: "booking_appointment",
-    ),
-    QuickReply(
-      title: "2",
-      value: "rescheduling_canceling",
-    ),
-    QuickReply(
-      title: "3",
-      value: "viewing_details",
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
 
     // Add the bot's initial message
     ChatMessage initialMessage = ChatMessage(
-      text: "Hello! 👋 How can I assist you today?\n\n"
+      text: "Hello! 👋 I am a Quick Chat Bot. How can I assist you today?\n\n"
           "Here are some common topics:\n"
           "1. Appointment Issues\n"
           "2. Health Education Resources\n"
-          "3. Technical Support\n"
-          "4. Other Questions\n\n"
-          "Please type the number of topic you'd like help with.",
+          "3. Technical Support\n\n"
+          "Please type the number of the topic you'd like help with.",
       user: bot,
       createdAt: DateTime.now(),
     );
@@ -83,6 +46,10 @@ class _ChatPageState extends State<ChatPage> {
       handleMainMenu(chatMessage);
     } else if (currentContext == "appointment_issues") {
       handleAppointmentIssues(chatMessage);
+    } else if (currentContext == "health_education") {
+      handleHealthEducation(chatMessage);
+    } else if (currentContext == "technical_support") {
+      handleTechnicalSupport(chatMessage);
     } else {
       defaultResponse();
     }
@@ -94,8 +61,7 @@ class _ChatPageState extends State<ChatPage> {
       ChatMessage reply = ChatMessage(
         text: "Got it! Are you facing any of these issues?\n\n"
             "1. Booking an appointment\n"
-            "2. Rescheduling or canceling\n"
-            "3. Viewing appointment details",
+            "2. Rescheduling or canceling\n",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -104,9 +70,12 @@ class _ChatPageState extends State<ChatPage> {
         messages = [reply, ...messages];
       });
     } else if (chatMessage.text == "2") {
+      currentContext = "health_education";
       ChatMessage reply = ChatMessage(
-        text:
-            "You choose health education resources.",
+        text: "Great! What specific health topic are you interested in?\n"
+            "1. Nutrition\n"
+            "2. Exercise\n"
+            "3. Mental Health",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -114,21 +83,13 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         messages = [reply, ...messages];
       });
-    }else if (chatMessage.text == "3") {
+    } else if (chatMessage.text == "3") {
+      currentContext = "technical_support";
       ChatMessage reply = ChatMessage(
-        text:
-            "You choose Technical support",
-        user: bot,
-        createdAt: DateTime.now(),
-      );
-
-      setState(() {
-        messages = [reply, ...messages];
-      });
-    }else if (chatMessage.text == "4") {
-      ChatMessage reply = ChatMessage(
-        text:
-            "You choose other questions.",
+        text: "Let's resolve your technical issues. Please specify:\n"
+            "1. App not loading\n"
+            "2. Account issues\n"
+            "3. Other technical problems",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -145,7 +106,11 @@ class _ChatPageState extends State<ChatPage> {
     if (chatMessage.text == "1") {
       ChatMessage reply = ChatMessage(
         text:
-            "You selected Booking an appointment",
+            "You selected Booking an appointment. Here's how you can proceed:\n\n"
+            "- Navigate to the appointment page using the bottom navigation bar.\n"
+            "- Tap the 'Book New Appointment' button.\n"
+            "- Choose your date, time slot and the reason of appointment.\n"
+            "- Tap 'Confirm Appointment' and a confirmation message will pop out, indicating your booking is successful!",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -156,7 +121,84 @@ class _ChatPageState extends State<ChatPage> {
     } else if (chatMessage.text == "2") {
       ChatMessage reply = ChatMessage(
         text:
-            "You selected Rescheduling or canceling",
+            "You selected Rescheduling or canceling. Here's what you can do:\n\n"
+            "- Navigate to the appointment page using the bottom navigation bar.\n"
+            "- If you have an upcoming appointment, you can choose to cancel or reschedule the appointment.\n"
+            "- Choose your date and time slot for the new schedule.\n"
+            "- Tap 'Confirm Appointment' and a confirmation message will pop out, indicating your reschedule is successful!",
+        user: bot,
+        createdAt: DateTime.now(),
+      );
+
+      setState(() {
+        messages = [reply, ...messages];
+      });
+    } else {
+      defaultResponse();
+    }
+  }
+
+  void handleHealthEducation(ChatMessage chatMessage) {
+    if (chatMessage.text == "1") {
+      ChatMessage reply = ChatMessage(
+        text: "You selected Nutrition. Here are some resources:\n\n"
+            "- Proteins: Essential for building and repairing tissues, making enzymes and hormones.\n"
+            "- Carbohydrates: The body's primary energy source.\n"
+            "- Fats: Provide energy and support cell growth.\n",
+        user: bot,
+        createdAt: DateTime.now(),
+      );
+
+      setState(() {
+        messages = [reply, ...messages];
+      });
+    } else if (chatMessage.text == "2") {
+      ChatMessage reply = ChatMessage(
+        text: "You selected Exercise. Here are some benefits of exercising:\n\n"
+            "- Strengthens the heart and lungs.\n"
+            "- Increases flexibility and muscle strength.\n"
+            "- Enhances balance and coordination.",
+        user: bot,
+        createdAt: DateTime.now(),
+      );
+
+      setState(() {
+        messages = [reply, ...messages];
+      });
+    } else if (chatMessage.text == "3") {
+      ChatMessage reply = ChatMessage(
+        text: "You selected Mental Health. Here's some advice:\n\n"
+            "- Build strong social connections.\n"
+            "- Practice mindfulness and meditation.\n"
+            "- Do physical activity regularly.",
+        user: bot,
+        createdAt: DateTime.now(),
+      );
+
+      setState(() {
+        messages = [reply, ...messages];
+      });
+    } else {
+      defaultResponse();
+    }
+  }
+
+  void handleTechnicalSupport(ChatMessage chatMessage) {
+    if (chatMessage.text == "1") {
+      ChatMessage reply = ChatMessage(
+        text: "You selected App not loading. Try these steps:\n\n"
+            "- Restarting the app",
+        user: bot,
+        createdAt: DateTime.now(),
+      );
+
+      setState(() {
+        messages = [reply, ...messages];
+      });
+    } else if (chatMessage.text == "2") {
+      ChatMessage reply = ChatMessage(
+        text: "You selected Account issues. Here's how to resolve them:\n\n"
+            "- Restarting the app",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -167,7 +209,7 @@ class _ChatPageState extends State<ChatPage> {
     } else if (chatMessage.text == "3") {
       ChatMessage reply = ChatMessage(
         text:
-            "You selected Viewing appointment details",
+            "You selected Other technical problems. Please describe the issue:",
         user: bot,
         createdAt: DateTime.now(),
       );
@@ -175,7 +217,7 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         messages = [reply, ...messages];
       });
-    }else {
+    } else {
       defaultResponse();
     }
   }
@@ -183,7 +225,7 @@ class _ChatPageState extends State<ChatPage> {
   void defaultResponse() {
     ChatMessage reply = ChatMessage(
       text:
-          "Sorry, I didn't understand that. Please type the number of topic you'd like help with.",
+          "Sorry, I didn't understand that. Please type the number of the topic you'd like help with.",
       user: bot,
       createdAt: DateTime.now(),
     );
@@ -201,14 +243,13 @@ class _ChatPageState extends State<ChatPage> {
         currentUser: user,
         onSend: onSend,
         messages: messages,
-        messageOptions: MessageOptions(
+        messageOptions: const MessageOptions(
           currentUserContainerColor: Colors.white,
           currentUserTextColor: Colors.black,
         ),
         inputOptions: InputOptions(
           inputDecoration: InputDecoration(
-            prefixIcon: const Icon(Icons.attachment),
-            suffixIcon: const Icon(Icons.camera_alt),
+            contentPadding: EdgeInsets.symmetric(horizontal: 25),
             fillColor: Colors.white,
             filled: true,
             hintText: 'Message....',

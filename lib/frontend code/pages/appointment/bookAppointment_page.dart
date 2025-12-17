@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:mediease_app/frontend%20code/pages/appointment/appointment_page.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:lottie/lottie.dart';
 
 class BookappointmentPage extends StatefulWidget {
+  final Function(int) onTabChange;
+  const BookappointmentPage({super.key, required this.onTabChange});
+
   @override
   _BookappointmentPageState createState() => _BookappointmentPageState();
 }
@@ -13,6 +18,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String? selectedTimeSlot;
+  final TextEditingController _reasonController = TextEditingController();
 
   final List<String> timeSlots = [
     '8 AM',
@@ -26,21 +32,20 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   ];
 
   // Function to book an appointment
-  Future<void> _bookAppointment() async {
+  Future<void> _bookAppointment(BuildContext context) async {
     if (_selectedDay == null || selectedTimeSlot == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a date and a time slot')),
+        const SnackBar(content: Text('Please select a date and a time slot')),
       );
       return;
     }
 
-    // Combine date and time into a single DateTime object
     try {
-      // Convert selectedTimeSlot (e.g., '8 AM') into a 24-hour time
+      // Convert selectedTimeSlot into a DateTime object
       final timeFormat = DateFormat('h a'); // Parse '8 AM', '12 PM', etc.
       DateTime time = timeFormat.parse(selectedTimeSlot!);
 
-      // Combine the selectedDay and time into a single DateTime object
+      // Combine the selectedDay and time
       DateTime combinedDateTime = DateTime(
         _selectedDay!.year,
         _selectedDay!.month,
@@ -53,32 +58,106 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
       User? currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please log in to book an appointment')),
+          const SnackBar(content: Text('Please log in to book an appointment')),
         );
         return;
       }
 
-      // Save combinedDateTime to Firestore
-      await FirebaseFirestore.instance.collection('appointments').add({
+      // Generate unique appointment ID
+      String appointmentId =
+          FirebaseFirestore.instance.collection('appointments').doc().id;
+
+      // Save the appointment to the `appointments` collection
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(appointmentId)
+          .set({
+        'appointmentId': appointmentId,
         'userId': currentUser.uid,
         'userName': currentUser.displayName ?? 'Unknown',
         'userEmail': currentUser.email ?? 'Unknown',
-        'appointmentDateTime': combinedDateTime, // Save as DateTime
+        'appointmentDateTime': combinedDateTime,
+        'reasonOfAppointment': _reasonController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'scheduled',
-        'title': 'Fever',
+        'title': 'Medical Check-up',
       });
 
-      // Success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment booked successfully!')),
+      // Add a notification to the `notifications` subcollection for the user
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('notifications')
+          .add({
+        'message': 'Your appointment has been successfully booked.',
+        'appointmentId': appointmentId,
+        'appointmentDateTime': combinedDateTime,
+        'Place': 'Pusat Kesihatan Prima, UNIMAS',
+        'createdAt': FieldValue.serverTimestamp(),
+        'type': 'appointment_booking',
+        'isRead': false, // Mark as unread initially
+      });
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 100,
+                  child: Lottie.asset(
+                    'assets/animations/success.json',
+                    repeat: false,
+                  ),
+                ),
+                const Text(
+                  'Appointment booked successfully!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Your appointment details:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Date: ${DateFormat('EEEE, MMM d, yyyy').format(combinedDateTime)}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Time: ${DateFormat('h:mm a').format(combinedDateTime)}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Place: Pusat Kesihatan Prima, UNIMAS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close dialog
+                  widget.onTabChange(2); // Switch to Appointments tab
+                  Navigator.pop(context); // Close booking page
+                },
+                child: const Text('Done'),
+              ),
+            ],
+          );
+        },
       );
-
-      // Clear selections after saving
-      setState(() {
-        _selectedDay = null;
-        selectedTimeSlot = null;
-      });
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,19 +170,19 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff9AD4CC),
-        title: Text("Book Appointment"),
+        backgroundColor: const Color(0xff9AD4CC),
+        title: const Text("Book Appointment"),
         centerTitle: true,
       ),
-      backgroundColor: Color(0xff9AD4CC),
+      backgroundColor: const Color(0xff9AD4CC),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 18),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
                 child: Text(
                   "Choose Appointment Date",
                   style: TextStyle(
@@ -132,11 +211,11 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                           _focusedDay = focusedDay;
                         });
                       },
-                      headerStyle: HeaderStyle(
+                      headerStyle: const HeaderStyle(
                         titleCentered: true,
                         formatButtonVisible: false,
                       ),
-                      calendarStyle: CalendarStyle(
+                      calendarStyle: const CalendarStyle(
                         isTodayHighlighted: false,
                         selectedDecoration: BoxDecoration(
                           color: Color(0XFF00589F),
@@ -146,19 +225,25 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                       firstDay: DateTime.utc(2023),
                       lastDay: DateTime.utc(2030, 3, 14),
                       focusedDay: _focusedDay,
+                      enabledDayPredicate: (day) {
+                        return !day.isBefore(
+                            DateTime.now().subtract(const Duration(days: 1)));
+                      },
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Selected Date: ${_selectedDay != null ? DateFormat('yyyy-MM-dd').format(_selectedDay!) : "None"}',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
-
-              Padding(
-                padding: const EdgeInsets.only(left: 18),
+              const SizedBox(
+                height: 15,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
                 child: Text(
                   "Choose Appointment Time",
                   style: TextStyle(
@@ -194,7 +279,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                         width: 100,
                         child: Container(
                           width: 100,
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Colors.teal[700]
@@ -202,7 +287,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: isSelected
                                 ? [
-                                    BoxShadow(
+                                    const BoxShadow(
                                       color: Colors.black26,
                                       blurRadius: 6,
                                       offset: Offset(2, 2),
@@ -214,7 +299,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                           child: Text(
                             time,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected ? Colors.white : Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -225,19 +310,48 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                 ),
               ),
 
+              const SizedBox(
+                height: 15,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 18),
+                child: Text(
+                  "Please state the reason of your appointment",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff2A3E66),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(left: 15.0, right: 15),
+                child: TextField(
+                  controller: _reasonController,
+                  decoration: InputDecoration(
+                    hintText: "Reason of appointment",
+                    hintStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                ),
+              ),
+
               // Book Appointment Button
-              SizedBox(height: 20),
+              const SizedBox(height: 40),
               MaterialButton(
                 onPressed: () {
-                  _bookAppointment();
+                  _bookAppointment(context);
                 },
                 minWidth: 300,
                 height: 50,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
-                color: Color(0xff00589F),
-                child: Text(
+                color: const Color(0xff00589F),
+                child: const Text(
                   "Confirm Appointment",
                   style: TextStyle(
                     fontSize: 16,
@@ -246,6 +360,7 @@ class _BookappointmentPageState extends State<BookappointmentPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
